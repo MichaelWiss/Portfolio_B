@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test</title>
+    <style>
+        body { font-family: Arial; padding: 40px; }
+        .hero-text { font-size: 48px; margin-bottom: 40px; }
+        .accordion-title { font-size: 32px; margin: 20px 0; }
+        .test { color: red; font-size: 24px; }
+    </style>
+</head>
+<body>
+    <div class="test">JavaScript Test</div>
+    <div class="hero-text" id="hero">Static Hero Text</div>
+    <div class="accordion-title">I was born in California & raised with Aloha</div>
+    
+    <script>
+        console.log('Script loading...');
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM loaded');
+            
+            // Test hero
+            const heroEl = document.getElementById('hero');
+            if (heroEl) {
+                heroEl.innerHTML = 'DYNAMIC TEXT LOADED';
+                console.log('Hero updated');
+            }
+            
+            // Test simple function
+            setTimeout(() => {
+                document.querySelector('.test').textContent = 'JavaScript is working!';
+            }, 1000);
+        });
+    </script>
+</body>
+</html>

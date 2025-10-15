@@ -28,55 +28,55 @@
 
     <div class="marquee-container" id="projects">
         <div class="marquee">
-            <div class="grate-card" onclick="openModal('Trench grates', 'trench')">
+            <!-- First set of project cards -->
+            <div class="grate-card" data-modal-type="trench" data-modal-title="Printed Poster">
                 <div class="grate-label">SHOPIFY, NEXT, REACT</div>
                 <div class="grate-title">Printed Poster <span class="arrow">↗</span></div>
-                <img src="assets/media/videos/printedPoster.gif" alt="Pool grates" class="grate-image">
-                <!-- <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&q=80" alt="Trench grates" class="grate-image"> -->
+                <img src="assets/media/videos/printedPoster.gif" alt="Printed Poster project showcase - Shopify e-commerce application" class="grate-image">
             </div>
 
-            <div class="grate-card" onclick="openModal('Pool grates', 'pool')">
+            <div class="grate-card" data-modal-type="pool" data-modal-title="Runners Rotation">
                 <div class="grate-label">SHOPIFY, NEXT, REACT</div>
                 <div class="grate-title">Runners Rotation<span class="arrow">↗</span></div>
-                <img src="assets/media/videos/runnersRotation.gif" alt="Pool grates" class="grate-image">
-                <!-- <img src="https://images.unsplash.com/photo-1576610616656-d3aa5d1f4534?w=800&q=80" alt="Pool grates" class="grate-image"> -->
+                <img src="assets/media/videos/runnersRotation.gif" alt="Runners Rotation project showcase - Shopify e-commerce application" class="grate-image">
             </div>
 
-            <div class="grate-card" onclick="openModal('Tree grates', 'tree')">
+            <div class="grate-card" data-modal-type="tree" data-modal-title="Tree grates">
                 <div class="grate-label">GRATES</div>
                 <div class="grate-title">Tree grates <span class="arrow">↗</span></div>
-                <img src="https://images.unsplash.com/photo-1520998397414-efd172ad0f16?w=800&q=80" alt="Tree grates" class="grate-image">
+                <img src="https://images.unsplash.com/photo-1520998397414-efd172ad0f16?w=800&q=80" alt="Tree grates project showcase" class="grate-image">
             </div>
 
-            <div class="grate-card" onclick="openModal('Bathroom grates', 'bathroom')">
+            <div class="grate-card" data-modal-type="bathroom" data-modal-title="Bathroom grates">
                 <div class="grate-label">GRATES</div>
                 <div class="grate-title">Bathroom grates <span class="arrow">↗</span></div>
-                <img src="https://images.unsplash.com/photo-1552321554-5fefe8c9ef14?w=800&q=80" alt="Bathroom grates" class="grate-image">
+                <img src="https://images.unsplash.com/photo-1552321554-5fefe8c9ef14?w=800&q=80" alt="Bathroom grates project showcase" class="grate-image">
             </div>
 
-            <!-- <div class="grate-card" onclick="openModal('Trench grates', 'trench')">
-                <div class="grate-label">GRATES</div>
-                <div class="grate-title">Trench grates <span class="arrow">↗</span></div>
-                <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&q=80" alt="Trench grates" class="grate-image">
+            <!-- Duplicate set for seamless looping -->
+            <div class="grate-card" data-modal-type="trench" data-modal-title="Printed Poster">
+                <div class="grate-label">SHOPIFY, NEXT, REACT</div>
+                <div class="grate-title">Printed Poster <span class="arrow">↗</span></div>
+                <img src="assets/media/videos/printedPoster.gif" alt="Printed Poster project showcase - Shopify e-commerce application" class="grate-image">
             </div>
 
-            <div class="grate-card" onclick="openModal('Pool grates', 'pool')">
-                <div class="grate-label">GRATES</div>
-                <div class="grate-title">Pool grates <span class="arrow">↗</span></div>
-                <img src="https://images.unsplash.com/photo-1576610616656-d3aa5d1f4534?w=800&q=80" alt="Pool grates" class="grate-image">
+            <div class="grate-card" data-modal-type="pool" data-modal-title="Runners Rotation">
+                <div class="grate-label">SHOPIFY, NEXT, REACT</div>
+                <div class="grate-title">Runners Rotation<span class="arrow">↗</span></div>
+                <img src="assets/media/videos/runnersRotation.gif" alt="Runners Rotation project showcase - Shopify e-commerce application" class="grate-image">
             </div>
 
-            <div class="grate-card" onclick="openModal('Tree grates', 'tree')">
+            <div class="grate-card" data-modal-type="tree" data-modal-title="Tree grates">
                 <div class="grate-label">GRATES</div>
                 <div class="grate-title">Tree grates <span class="arrow">↗</span></div>
-                <img src="https://images.unsplash.com/photo-1520998397414-efd172ad0f16?w=800&q=80" alt="Tree grates" class="grate-image">
+                <img src="https://images.unsplash.com/photo-1520998397414-efd172ad0f16?w=800&q=80" alt="Tree grates project showcase" class="grate-image">
             </div>
 
-            <div class="grate-card" onclick="openModal('Bathroom grates', 'bathroom')">
+            <div class="grate-card" data-modal-type="bathroom" data-modal-title="Bathroom grates">
                 <div class="grate-label">GRATES</div>
                 <div class="grate-title">Bathroom grates <span class="arrow">↗</span></div>
-                <img src="https://images.unsplash.com/photo-1552321554-5fefe8c9ef14?w=800&q=80" alt="Bathroom grates" class="grate-image">
-            </div> -->
+                <img src="https://images.unsplash.com/photo-1552321554-5fefe8c9ef14?w=800&q=80" alt="Bathroom grates project showcase" class="grate-image">
+            </div>
         </div>
     </div>
 
@@ -206,7 +206,7 @@
         </div>
         <div class="detail-page who-dis" id="page-who-dis">
             <div class="detail-content">
-                <button class="close-btn" onclick="closePage('who-dis')">✕ CLOSE</button>
+                <button class="close-btn" data-close-page="who-dis">✕ CLOSE</button>
                 <h1>WHO DIS</h1>
                 <p>Welcome to our creative studio. We're a team of passionate designers, art directors, and visual storytellers dedicated to pushing the boundaries of creative expression. Our work spans multiple disciplines, bringing innovative solutions to brands and projects worldwide.</p>
             </div>
@@ -217,7 +217,7 @@
         </div>
         <div class="detail-page art-direction" id="page-art-direction">
             <div class="detail-content">
-                <button class="close-btn" onclick="closePage('art-direction')">✕ CLOSE</button>
+                <button class="close-btn" data-close-page="art-direction">✕ CLOSE</button>
                 <h1>ART DIRECTION</h1>
                 <p>Our art direction services bring cohesive visual narratives to life. We craft compelling visual strategies that communicate your brand's story with impact and authenticity. From concept to execution, we ensure every element aligns with your vision.</p>
             </div>
@@ -228,7 +228,7 @@
         </div>
         <div class="detail-page design" id="page-design">
             <div class="detail-content">
-                <button class="close-btn" onclick="closePage('design')">✕ CLOSE</button>
+                <button class="close-btn" data-close-page="design">✕ CLOSE</button>
                 <h1>DESIGN</h1>
                 <p>Design is at the heart of everything we do. We create bold, memorable visual experiences across digital and print media. Our design approach balances aesthetics with functionality, ensuring your message resonates with your audience.</p>
             </div>
@@ -239,7 +239,7 @@
         </div>
         <div class="detail-page editorial" id="page-editorial">
             <div class="detail-content">
-                <button class="close-btn" onclick="closePage('editorial')">✕ CLOSE</button>
+                <button class="close-btn" data-close-page="editorial">✕ CLOSE</button>
                 <h1>EDITORIAL</h1>
                 <p>Our editorial work combines striking visuals with compelling storytelling. We produce content that engages, informs, and inspires. From magazines to digital publications, we craft narratives that captivate readers and leave lasting impressions.</p>
             </div>
@@ -250,7 +250,7 @@
         </div>
         <div class="detail-page illustration" id="page-illustration">
             <div class="detail-content">
-                <button class="close-btn" onclick="closePage('illustration')">✕ CLOSE</button>
+                <button class="close-btn" data-close-page="illustration">✕ CLOSE</button>
                 <h1>ILLUSTRATION</h1>
                 <p>Custom illustrations add unique character to any project. Our illustrators create original artwork that brings concepts to life with personality and flair. Whether bold and graphic or detailed and intricate, we tailor our style to your needs.</p>
             </div>
@@ -269,7 +269,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h2 class="modal-title" id="modalTitle"></h2>
-                <button class="close-modal-btn" onclick="closeModal()">×</button>
+                <button class="close-modal-btn" id="closeModalBtn">×</button>
             </div>
             <div class="modal-body">
                 <div class="video-placeholder" id="videoContainer">
