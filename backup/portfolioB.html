@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Michael Wiss</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #E8CEBA;
+            font-family: 'Arial Black', sans-serif;
+            padding: 60px 40px;
+            overflow-x: hidden;
+        }
+
+        .hero-text {
+            font-size: clamp(40px, 8vw, 120px);
+            font-weight: 900;
+            line-height: 1.1;
+            letter-spacing: -0.02em;
+            margin-bottom: 60px;
+        }
+
+        .hero-text .word {
+            display: inline-block;
+            margin-right: 0.15em;
+            opacity: 0;
+            transform: translateY(50px);
+            animation: fadeInUp 0.8s cubic-bezier(0.33, 1, 0.68, 1) forwards;
+        }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, 
+                #2E2520 0%, 
+                #2E2520 15%, 
+                #2E2520 30%, 
+                #2E2520 45%,
+                #2E2520 60%,
+                #2E2520 75%,
+                #2E2520 90%,
+                #2E2520 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-size: 200% 200%;
+            animation: gradientShift 8s ease infinite;
+        }
+
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .sparkle {
+            display: inline-block;
+            font-size: 0.4em;
+            margin: 0 0.2em;
+            animation: sparkle 1.5s ease-in-out infinite;
+        }
+
+        @keyframes sparkle {
+            0%, 100% { 
+                opacity: 1;
+                transform: scale(1) rotate(0deg);
+            }
+            50% { 
+                opacity: 0.4;
+                transform: scale(1.3) rotate(180deg);
+            }
+        }
+
+        .sparkle:nth-child(2) {
+            animation-delay: 0.3s;
+        }
+
+        .sparkle:nth-child(3) {
+            animation-delay: 0.6s;
+        }
+
+        .blue-marquee-container {
+            background-color: #1a3a52;
+            margin: 0 -40px 60px -40px;
+            padding: 40px 0;
+            overflow: hidden;
+            border-top: 3px solid #2E2520;
+            border-bottom: 3px solid #2E2520;
+        }
+
+        .blue-marquee {
+            display: flex;
+            white-space: nowrap;
+            animation: scroll 15s linear infinite;
+        }
+
+        .blue-marquee-text {
+            color: #E8CEBA;
+            font-size: clamp(50px, 8vw, 100px);
+            font-weight: 900;
+            letter-spacing: 0.1em;
+            padding: 0 50px;
+        }
+
+        @keyframes scroll {
+            0% {
+                transform: translateX(0);
+            }
+            100% {
+                transform: translateX(-50%);
+            }
+        }
+
+        /* Grates Marquee Styles */
+        .marquee-container {
+            overflow: hidden;
+            position: relative;
+            width: calc(100% + 80px);
+            margin: 0 -40px 60px -40px;
+        }
+
+        .marquee {
+            display: flex;
+            gap: 24px;
+            animation: scroll 40s linear infinite;
+            will-change: transform;
+        }
+
+        .marquee:hover {
+            animation-play-state: paused;
+        }
+
+        .grate-card {
+            flex-shrink: 0;
+            width: 360px;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .grate-card:hover {
+            transform: translateY(-4px);
+        }
+
+        .grate-label {
+            font-size: 11px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: #2E2520;
+            margin-bottom: 12px;
+            font-weight: 500;
+            opacity: 0.6;
+        }
+
+        .grate-title {
+            font-size: 24px;
+            font-weight: 400;
+            color: #2E2520;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .arrow {
+            font-size: 20px;
+            transition: transform 0.3s ease;
+        }
+
+        .grate-card:hover .arrow {
+            transform: translate(4px, -4px);
+        }
+
+        .grate-image {
+            width: 100%;
+            height: 480px;
+            object-fit: cover;
+            border-radius: 4px;
+            border: 2px solid #2E2520;
+        }
+
+        /* Overlapping Scroll Section - Full Width */
+        .panel {
+            height: 100vh;
+            position: sticky;
+            top: 0;
+            display: grid;
+            grid-template-columns: 80px 1px 1fr;
+            align-items: center;
+            padding: 0;
+            border-top: 3px solid #2E2520;
+            margin: 0 -40px;
+        }
+
+        .panel-number {
+            font-size: 1rem;
+            color: #2E2520;
+            font-weight: 900;
+            padding-left: 2rem;
+        }
+
+        .vertical-line {
+            width: 1px;
+            height: 100%;
+            background: #2E2520;
+        }
+
+        .panel-content {
+            max-width: 900px;
+            width: 100%;
+            padding: 4rem 4rem 4rem 3rem;
+        }
+
+        .panel-title {
+            font-size: clamp(2.5rem, 8vw, 6rem);
+            font-weight: 900;
+            color: #2E2520;
+            line-height: 1.1;
+            margin-bottom: 3rem;
+        }
+
+        .panel-description {
+            font-size: 1.25rem;
+            line-height: 1.6;
+            color: #2E2520;
+            max-width: 650px;
+            font-weight: 400;
+        }
+
+        #panel1 {
+            background: #E8CEBA;
+            z-index: 1;
+        }
+
+        #panel2 {
+            background: #d4c5b9;
+            z-index: 2;
+        }
+
+        #panel3 {
+            background: #c0b1a5;
+            z-index: 3;
+        }
+
+        #panel4 {
+            background: #1a3a52;
+            z-index: 4;
+        }
+
+        #panel4 .panel-number,
+        #panel4 .panel-title,
+        #panel4 .panel-description {
+            color: #E8CEBA;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(46, 37, 32, 0.85);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        .modal-content {
+            background: #E8CEBA;
+            border-radius: 8px;
+            max-width: 1200px;
+            width: 100%;
+            max-height: 90vh;
+            overflow: hidden;
+            position: relative;
+            transform: scale(0.9);
+            transition: transform 0.3s ease;
+            border: 3px solid #2E2520;
+        }
+
+        .modal.active .modal-content {
+            transform: scale(1);
+        }
+
+        .modal-header {
+            padding: 24px 32px;
+            border-bottom: 2px solid #2E2520;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            font-size: 24px;
+            font-weight: 400;
+            color: #2E2520;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 32px;
+            color: #2E2520;
+            cursor: pointer;
+            padding: 0;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: background 0.2s ease;
+        }
+
+        .close-btn:hover {
+            background: rgba(46, 37, 32, 0.1);
+        }
+
+        .modal-body {
+            padding: 32px;
+        }
+
+        .video-placeholder {
+            width: 100%;
+            aspect-ratio: 16/9;
+            background: #2E2520;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #E8CEBA;
+            font-size: 18px;
+        }
+
+        video {
+            width: 100%;
+            height: 100%;
+            border-radius: 4px;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 30px 20px;
+            }
+            
+            .blue-marquee-container {
+                margin: 0 -20px 40px -20px;
+            }
+
+            .marquee-container {
+                width: calc(100% + 40px);
+                margin: 0 -20px 40px -20px;
+            }
+
+            .panel {
+                grid-template-columns: 60px 1px 1fr;
+                margin: 0 -20px;
+            }
+
+            .panel-content {
+                padding: 2rem;
+            }
+
+            .panel-number {
+                padding-left: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- HEADER -->
+    <div class="hero-text gradient-text" id="hero"></div>
+
+    <!-- BLUE MARQUEE -->
+    <div class="blue-marquee-container">
+        <div class="blue-marquee">
+            <div class="blue-marquee-text">MICHAEL WISS • MICHAEL WISS • MICHAEL WISS • MICHAEL WISS • </div>
+            <div class="blue-marquee-text">MICHAEL WISS • MICHAEL WISS • MICHAEL WISS • MICHAEL WISS • </div>
+        </div>
+    </div>
+
+    <!-- STYLED MARQUEE (GRATES) -->
+    <div class="marquee-container">
+        <div class="marquee" id="marquee">
+            <!-- First set -->
+            <div class="grate-card" onclick="openModal('Trench grates', 'trench')">
+                <div class="grate-label">GRATES</div>
+                <div class="grate-title">Trench grates <span class="arrow">↗</span></div>
+                <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&q=80" alt="Trench grates" class="grate-image">
+            </div>
+
+            <div class="grate-card" onclick="openModal('Pool grates', 'pool')">
+                <div class="grate-label">SHOPIFY, NEXT, REACT</div>
+                <div class="grate-title">Runners Rotation<span class="arrow">↗</span></div>
+                <img src="https://images.unsplash.com/photo-1576610616656-d3aa5d1f4534?w=800&q=80" alt="Pool grates" class="grate-image">
+            </div>
+
+            <div class="grate-card" onclick="openModal('Tree grates', 'tree')">
+                <div class="grate-label">GRATES</div>
+                <div class="grate-title">Tree grates <span class="arrow">↗</span></div>
+                <img src="https://images.unsplash.com/photo-1520998397414-efd172ad0f16?w=800&q=80" alt="Tree grates" class="grate-image">
+            </div>
+
+            <div class="grate-card" onclick="openModal('Bathroom grates', 'bathroom')">
+                <div class="grate-label">GRATES</div>
+                <div class="grate-title">Bathroom grates <span class="arrow">↗</span></div>
+                <img src="https://images.unsplash.com/photo-1552321554-5fefe8c9ef14?w=800&q=80" alt="Bathroom grates" class="grate-image">
+            </div>
+
+            <!-- Duplicate set for seamless loop -->
+            <div class="grate-card" onclick="openModal('Trench grates', 'trench')">
+                <div class="grate-label">GRATES</div>
+                <div class="grate-title">Trench grates <span class="arrow">↗</span></div>
+                <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&q=80" alt="Trench grates" class="grate-image">
+            </div>
+
+            <div class="grate-card" onclick="openModal('Pool grates', 'pool')">
+                <div class="grate-label">GRATES</div>
+                <div class="grate-title">Pool grates <span class="arrow">↗</span></div>
+                <img src="https://images.unsplash.com/photo-1576610616656-d3aa5d1f4534?w=800&q=80" alt="Pool grates" class="grate-image">
+            </div>
+
+            <div class="grate-card" onclick="openModal('Tree grates', 'tree')">
+                <div class="grate-label">GRATES</div>
+                <div class="grate-title">Tree grates <span class="arrow">↗</span></div>
+                <img src="https://images.unsplash.com/photo-1520998397414-efd172ad0f16?w=800&q=80" alt="Tree grates" class="grate-image">
+            </div>
+
+            <div class="grate-card" onclick="openModal('Bathroom grates', 'bathroom')">
+                <div class="grate-label">GRATES</div>
+                <div class="grate-title">Bathroom grates <span class="arrow">↗</span></div>
+                <img src="https://images.unsplash.com/photo-1552321554-5fefe8c9ef14?w=800&q=80" alt="Bathroom grates" class="grate-image">
+            </div>
+        </div>
+    </div>
+
+    <!-- OVERLAPPING SCROLL SECTION - FULL WIDTH -->
+    <div class="panel" id="panel1">
+        <div class="panel-number">01</div>
+        <div class="vertical-line"></div>
+        <div class="panel-content">
+            <h1 class="panel-title">Creative Excellence</h1>
+            <p class="panel-description">
+                We bring bold ideas to life through innovative design and strategic thinking. 
+                Our approach combines aesthetic excellence with functional purpose, creating 
+                experiences that resonate with audiences and drive meaningful engagement.
+            </p>
+        </div>
+    </div>
+
+    <div class="panel" id="panel2">
+        <div class="panel-number">02</div>
+        <div class="vertical-line"></div>
+        <div class="panel-content">
+            <h1 class="panel-title">Digital Innovation</h1>
+            <p class="panel-description">
+                Creating immersive digital environments that captivate audiences and deliver 
+                memorable user experiences across all platforms. From web to mobile, we craft 
+                digital solutions that push boundaries and set new standards.
+            </p>
+        </div>
+    </div>
+
+    <div class="panel" id="panel3">
+        <div class="panel-number">03</div>
+        <div class="vertical-line"></div>
+        <div class="panel-content">
+            <h1 class="panel-title">Brand Identity</h1>
+            <p class="panel-description">
+                Developing distinctive brand identities that resonate with audiences and stand 
+                out in today's competitive landscape. We create cohesive visual languages that 
+                tell compelling stories and build lasting connections.
+            </p>
+        </div>
+    </div>
+
+    <div class="panel" id="panel4">
+        <div class="panel-number">04</div>
+        <div class="vertical-line"></div>
+        <div class="panel-content">
+            <h1 class="panel-title">Motion & Interactive</h1>
+            <p class="panel-description">
+                Bringing static designs to life through motion graphics and interactive elements 
+                that engage and inspire. Our animation work adds depth and dimension to digital 
+                experiences, creating moments of delight and wonder.
+            </p>
+        </div>
+    </div>
+
+    <!-- FEATURE -->
+    <div class="hero-text gradient-text" id="hero3"></div>
+
+    <!-- Modal -->
+    <div class="modal" id="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="modalTitle"></h2>
+                <button class="close-btn" onclick="closeModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="video-placeholder" id="videoContainer">
+                    <p>Place your .mov file here</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // HEADER
+        const text = `Dazzle is a creative studio in New York City that makes everything DAZZLING. We make work across all mediums and platforms: branding, digital, motion, illustration, environmental, print, packaging & more.`;
+        
+        const heroEl = document.getElementById('hero');
+        const words = text.split(' ');
+        
+        words.forEach((word, index) => {
+            const wordSpan = document.createElement('span');
+            wordSpan.className = 'word';
+            wordSpan.style.animationDelay = `${index * 0.05}s`;
+            
+            // Add sparkles before "DAZZLING"
+            if (word === 'DAZZLING.') {
+                const sparkle1 = document.createElement('span');
+                sparkle1.className = 'sparkle';
+                sparkle1.textContent = '✨';
+                heroEl.appendChild(sparkle1);
+                
+                const sparkle2 = document.createElement('span');
+                sparkle2.className = 'sparkle';
+                sparkle2.textContent = '✨';
+                heroEl.appendChild(sparkle2);
+                
+                const sparkle3 = document.createElement('span');
+                sparkle3.className = 'sparkle';
+                sparkle3.textContent = '✨';
+                heroEl.appendChild(sparkle3);
+            }
+            
+            wordSpan.textContent = word;
+            heroEl.appendChild(wordSpan);
+            
+            // Add space after word
+            heroEl.appendChild(document.createTextNode(' '));
+        });
+
+        // FEATURE
+        const text3 = `Dazzle is a creative studio in New York City that makes everything DAZZLING. We make work across all mediums and platforms: branding, digital, motion, illustration, environmental, print, packaging & more.`;
+        
+        const heroEl3 = document.getElementById('hero3');
+        const words3 = text3.split(' ');
+        
+        words3.forEach((word, index) => {
+            const wordSpan = document.createElement('span');
+            wordSpan.className = 'word';
+            wordSpan.style.animationDelay = `${index * 0.05}s`;
+            
+            // Add sparkles before "DAZZLING"
+            if (word === 'DAZZLING.') {
+                const sparkle1 = document.createElement('span');
+                sparkle1.className = 'sparkle';
+                sparkle1.textContent = '✨';
+                heroEl3.appendChild(sparkle1);
+                
+                const sparkle2 = document.createElement('span');
+                sparkle2.className = 'sparkle';
+                sparkle2.textContent = '✨';
+                heroEl3.appendChild(sparkle2);
+                
+                const sparkle3 = document.createElement('span');
+                sparkle3.className = 'sparkle';
+                sparkle3.textContent = '✨';
+                heroEl3.appendChild(sparkle3);
+            }
+            
+            wordSpan.textContent = word;
+            heroEl3.appendChild(wordSpan);
+            
+            // Add space after word
+            heroEl3.appendChild(document.createTextNode(' '));
+        });
+
+        // Modal functionality
+        let currentVideo = null;
+
+        const videoFiles = {
+            'trench': 'printedPoster.mov',
+            'pool': 'runnersRotation.mov',
+            'tree': 'tree-grates-ui.mov',
+            'bathroom': 'bathroom-grates-ui.mov'
+        };
+
+        function openModal(title, type) {
+            const modal = document.getElementById('modal');
+            const modalTitle = document.getElementById('modalTitle');
+            const videoContainer = document.getElementById('videoContainer');
+            
+            modalTitle.textContent = title;
+            
+            const videoPath = videoFiles[type];
+            
+            videoContainer.innerHTML = `
+                <video controls autoplay>
+                    <source src="${videoPath}" type="video/mp4">
+                    <source src="${videoPath}" type="video/quicktime">
+                    <p style="padding: 20px;">Video: ${videoPath}<br>Make sure to upload your .mov file and update the path in the videoFiles object.</p>
+                </video>
+            `;
+            
+            currentVideo = videoContainer.querySelector('video');
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('modal');
+            if (currentVideo) {
+                currentVideo.pause();
+            }
+            modal.classList.remove('active');
+            document.body.style.overflow = 'auto';
+            
+            setTimeout(() => {
+                document.getElementById('videoContainer').innerHTML = '<p>Place your .mov file here</p>';
+            }, 300);
+        }
+
+        document.getElementById('modal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeModal();
+            }
+        });
+    </script>
+</body> 
+</html>
