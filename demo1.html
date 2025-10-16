@@ -9,241 +9,29 @@
 <body>
     <!-- Sticky Navigation -->
     <nav class="sticky-nav" id="stickyNav">
-        <div class="nav-logo">Michael Wiss</div>
-        <div class="nav-links">
-            <a href="#projects" class="nav-link">Projects</a>
-            <a href="#resume" class="nav-link">Resume</a>
-            <a href="#contact" class="nav-link">Contact</a>
-        </div>
+        <div class="nav-logo" id="navLogo"></div>
+        <div class="nav-links" id="navLinks"></div>
     </nav>
 
-    <div class="hero-text gradient-text" id="hero"></div>
+    <div class="hero-text gradient-text" id="hero" aria-live="polite"></div>
 
     <div class="blue-marquee-container">
-        <div class="blue-marquee">
-            <div class="blue-marquee-text">MICHAEL WISS • MICHAEL WISS • MICHAEL WISS • MICHAEL WISS • </div>
-            <div class="blue-marquee-text">MICHAEL WISS • MICHAEL WISS • MICHAEL WISS • MICHAEL WISS • </div>
-        </div>
+        <div class="blue-marquee" id="nameMarquee" aria-hidden="true"></div>
     </div>
 
     <div class="marquee-container" id="projects">
-        <div class="marquee">
-            <!-- First set of project cards -->
-            <div class="grate-card" data-modal-type="trench" data-modal-title="Printed Poster">
-                <div class="grate-label">SHOPIFY, NEXT, REACT</div>
-                <div class="grate-title">Printed Poster <span class="arrow">↗</span></div>
-                <img src="assets/media/videos/printedPoster.gif" alt="Printed Poster project showcase - Shopify e-commerce application" class="grate-image">
-            </div>
-
-            <div class="grate-card" data-modal-type="pool" data-modal-title="Runners Rotation">
-                <div class="grate-label">SHOPIFY, NEXT, REACT</div>
-                <div class="grate-title">Runners Rotation<span class="arrow">↗</span></div>
-                <img src="assets/media/videos/runnersRotation.gif" alt="Runners Rotation project showcase - Shopify e-commerce application" class="grate-image">
-            </div>
-
-            <div class="grate-card" data-modal-type="tree" data-modal-title="Tree grates">
-                <div class="grate-label">Strapi, React</div>
-                <div class="grate-title">Chef Portfolio <span class="arrow">↗</span></div>
-                <img src="assets/media/videos/chefPortfolio.gif" alt="Chef Portfolio project showcase - Strapi CMS application" class="grate-image">
-            </div>
-
-            <div class="grate-card" data-modal-type="bathroom" data-modal-title="Bathroom grates">
-                <div class="grate-label">Shopify, React</div>
-                <div class="grate-title">Artisanal Market <span class="arrow">↗</span></div>
-                <img src="assets/media/videos/neoBauhaus.gif" alt="Shopify project showcase - Shopify application" class="grate-image">
-            </div>
-
-            <div class="grate-card" data-modal-type="bathroom" data-modal-title="Bathroom grates">
-                <div class="grate-label">Progressive Web App, React</div>
-                <div class="grate-title">HummingbirdPantry<span class="arrow">↗</span></div>
-                <img src="assets/media/videos/hummingbirdPantry.gif" alt="Shopify project showcase - Shopify application" class="grate-image">
-            </div>
-
-            <div class="grate-card" data-modal-type="bathroom" data-modal-title="Bathroom grates">
-                <div class="grate-label">Shopify, React</div>
-                <div class="grate-title">Bazaar<span class="arrow">↗</span></div>
-                <img src="assets/media/videos/bazaar.gif" alt="Shopify project showcase - Shopify application" class="grate-image">
-            </div>
-
-        </div>
+        <div class="marquee" id="projectsMarquee" aria-live="polite"></div>
     </div>
 
     <div class="accordion-section" id="resume">
-        <h2 class="accordion-header-text">My Journey</h2>
-        <div class="accordion-container" id="accordionContainer">
-            <div class="accordion-item">
-                <div class="accordion-header">
-                    <div class="accordion-title">I was born in California & raised with Aloha</div>
-                    <div class="accordion-icon">+</div>
-                </div>
-                <div class="accordion-content">
-                    <div class="accordion-body">
-                        Growing up between two worlds shaped my perspective on design and creativity. The laid-back beach culture of California mixed with the warm, community-focused spirit of Hawaiian Aloha taught me to approach every project with authenticity and heart.
-                    </div>
-                </div>
-            </div>
-
-            <div class="accordion-item">
-                <div class="accordion-header">
-                    <div class="accordion-title">I grew up playing Nintendo, reading comic books & watching the 49ers</div>
-                    <div class="accordion-icon">+</div>
-                </div>
-                <div class="accordion-content">
-                    <div class="accordion-body">
-                        These childhood passions instilled in me a love for storytelling, visual narratives, and the power of iconic design. From pixel art to comic panels to team logos, I learned that great design creates emotional connections and lasting memories.
-                    </div>
-                </div>
-            </div>
-
-            <div class="accordion-item">
-                <div class="accordion-header">
-                    <div class="accordion-title">I rode a skateboard, wore Stüssy & listened to Wu-Tang</div>
-                    <div class="accordion-icon">+</div>
-                </div>
-                <div class="accordion-content">
-                    <div class="accordion-body">
-                        In 1993, I bought my first skateboard—and in many ways, it changed everything. It became more than a way to move through the world; it was a form of expression, freedom, and identity. Through skateboarding, I found community, confidence, and a creative outlet that would inform my approach to design for years to come.
-                    </div>
-                </div>
-            </div>
-
-            <div class="accordion-item">
-                <div class="accordion-header">
-                    <div class="accordion-title">I worked my way up from an intern to Executive Creative Director</div>
-                    <div class="accordion-icon">+</div>
-                </div>
-                <div class="accordion-content">
-                    <div class="accordion-body">
-                        My career journey taught me that great design comes from curiosity, persistence, and always being willing to learn. Starting from the bottom gave me respect for every role in the creative process and shaped my collaborative approach to leadership.
-                    </div>
-                </div>
-            </div>
-
-            <div class="accordion-item">
-                <div class="accordion-header">
-                    <div class="accordion-title">Now I'm an Independent Designer & Executive Creative Director</div>
-                    <div class="accordion-icon">+</div>
-                </div>
-                <div class="accordion-content">
-                    <div class="accordion-body">
-                        Today, I bring together decades of experience to help brands tell their stories through bold, authentic design. I work with companies who value creativity, craftsmanship, and the power of visual communication to connect with audiences in meaningful ways.
-                    </div>
-                </div>
-            </div>
-        </div>
+        <h2 class="accordion-header-text" id="journeyTitle"></h2>
+        <div class="accordion-container" id="accordionContainer"></div>
     </div>
 
-    <div class="panels-section">
-        <div class="panel" id="panel1">
-            <div class="panel-number">01</div>
-            <div class="vertical-line"></div>
-            <div class="panel-content">
-                <h1 class="panel-title">Creative Excellence</h1>
-                <p class="panel-description">
-                    We bring bold ideas to life through innovative design and strategic thinking. 
-                    Our approach combines aesthetic excellence with functional purpose, creating 
-                    experiences that resonate with audiences and drive meaningful engagement.
-                </p>
-            </div>
-        </div>
-
-        <div class="panel" id="panel2">
-            <div class="panel-number">02</div>
-            <div class="vertical-line"></div>
-            <div class="panel-content">
-                <h1 class="panel-title">Digital Innovation</h1>
-                <p class="panel-description">
-                    Creating immersive digital environments that captivate audiences and deliver 
-                    memorable user experiences across all platforms. From web to mobile, we craft 
-                    digital solutions that push boundaries and set new standards.
-                </p>
-            </div>
-        </div>
-
-        <div class="panel" id="panel3">
-            <div class="panel-number">03</div>
-            <div class="vertical-line"></div>
-            <div class="panel-content">
-                <h1 class="panel-title">Brand Identity</h1>
-                <p class="panel-description">
-                    Developing distinctive brand identities that resonate with audiences and stand 
-                    out in today's competitive landscape. We create cohesive visual languages that 
-                    tell compelling stories and build lasting connections.
-                </p>
-            </div>
-        </div>
-
-        <div class="panel" id="panel4">
-            <div class="panel-number">04</div>
-            <div class="vertical-line"></div>
-            <div class="panel-content">
-                <h1 class="panel-title">Motion & Interactive</h1>
-                <p class="panel-description">
-                    Bringing static designs to life through motion graphics and interactive elements 
-                    that engage and inspire. Our animation work adds depth and dimension to digital 
-                    experiences, creating moments of delight and wonder.
-                </p>
-            </div>
-        </div>
-    </div>
+    <div class="panels-section" id="panelsSection"></div>
 
     <!-- Sliding Menu Section -->
-    <div class="menu-container">
-        <div class="menu-item who-dis" data-page="who-dis">
-            <span id="title-0">WHO DIS</span>
-        </div>
-        <div class="detail-page who-dis" id="page-who-dis">
-            <div class="detail-content">
-                <button class="close-btn" data-close-page="who-dis">✕ CLOSE</button>
-                <h1>WHO DIS</h1>
-                <p>Welcome to our creative studio. We're a team of passionate designers, art directors, and visual storytellers dedicated to pushing the boundaries of creative expression. Our work spans multiple disciplines, bringing innovative solutions to brands and projects worldwide.</p>
-            </div>
-        </div>
-
-        <div class="menu-item art-direction" data-page="art-direction">
-            <span id="title-1">ART DIRECTION</span>
-        </div>
-        <div class="detail-page art-direction" id="page-art-direction">
-            <div class="detail-content">
-                <button class="close-btn" data-close-page="art-direction">✕ CLOSE</button>
-                <h1>ART DIRECTION</h1>
-                <p>Our art direction services bring cohesive visual narratives to life. We craft compelling visual strategies that communicate your brand's story with impact and authenticity. From concept to execution, we ensure every element aligns with your vision.</p>
-            </div>
-        </div>
-
-        <div class="menu-item design" data-page="design">
-            <span id="title-2">DESIGN</span>
-        </div>
-        <div class="detail-page design" id="page-design">
-            <div class="detail-content">
-                <button class="close-btn" data-close-page="design">✕ CLOSE</button>
-                <h1>DESIGN</h1>
-                <p>Design is at the heart of everything we do. We create bold, memorable visual experiences across digital and print media. Our design approach balances aesthetics with functionality, ensuring your message resonates with your audience.</p>
-            </div>
-        </div>
-
-        <div class="menu-item editorial" data-page="editorial">
-            <span id="title-3">EDITORIAL</span>
-        </div>
-        <div class="detail-page editorial" id="page-editorial">
-            <div class="detail-content">
-                <button class="close-btn" data-close-page="editorial">✕ CLOSE</button>
-                <h1>EDITORIAL</h1>
-                <p>Our editorial work combines striking visuals with compelling storytelling. We produce content that engages, informs, and inspires. From magazines to digital publications, we craft narratives that captivate readers and leave lasting impressions.</p>
-            </div>
-        </div>
-
-        <div class="menu-item illustration" data-page="illustration">
-            <span id="title-4">ILLUSTRATION</span>
-        </div>
-        <div class="detail-page illustration" id="page-illustration">
-            <div class="detail-content">
-                <button class="close-btn" data-close-page="illustration">✕ CLOSE</button>
-                <h1>ILLUSTRATION</h1>
-                <p>Custom illustrations add unique character to any project. Our illustrators create original artwork that brings concepts to life with personality and flair. Whether bold and graphic or detailed and intricate, we tailor our style to your needs.</p>
-            </div>
-        </div>
-    </div>
+    <div class="menu-container" id="menuContainer"></div>
 
     <!-- Final Thank You Marquee -->
     <div class="thank-you-marquee-container">
@@ -252,6 +40,8 @@
             <div class="thank-you-marquee-text">THANK YOU • THANK YOU • THANK YOU • THANK YOU • THANK YOU • THANK YOU • THANK YOU • THANK YOU • </div>
         </div>
     </div>
+
+    <section id="contact" class="contact-placeholder" aria-hidden="true"></section>
 
     <div class="modal" id="modal">
         <div class="modal-content">
@@ -267,6 +57,201 @@
         </div>
     </div>
 
+    <script type="application/json" id="portfolio-content-data">
+        {
+            "site": {
+                "title": "Michael Wiss",
+                "heroText": "Michael Wiss is a creative developer who makes everything DAZZLING. I make work across all mediums and platforms: branding, digital, motion, illustration, environmental, print, packaging & more.",
+                "heroSparkleWords": [
+                    "DAZZLING"
+                ]
+            },
+            "navigation": {
+                "logo": "Michael Wiss",
+                "links": [
+                    {
+                        "text": "Projects",
+                        "href": "#projects"
+                    },
+                    {
+                        "text": "Resume",
+                        "href": "#resume"
+                    },
+                    {
+                        "text": "Contact",
+                        "href": "#contact"
+                    }
+                ]
+            },
+            "projects": [
+                {
+                    "id": "printed-poster",
+                    "modalType": "printedPoster",
+                    "label": "SHOPIFY, NEXT, REACT",
+                    "title": "Printed Poster",
+                    "image": "assets/media/videos/printedPoster.gif",
+                    "video": "assets/media/videos/printedPoster.mov",
+                    "alt": "Printed Poster project showcase - Shopify e-commerce application"
+                },
+                {
+                    "id": "runners-rotation",
+                    "modalType": "runnersRotation",
+                    "label": "SHOPIFY, NEXT, REACT",
+                    "title": "Runners Rotation",
+                    "image": "assets/media/videos/runnersRotation.gif",
+                    "video": "assets/media/videos/runnersRotation.mov",
+                    "alt": "Runners Rotation project showcase - Shopify e-commerce application"
+                },
+                {
+                    "id": "chef-portfolio",
+                    "modalType": "chefPortfolio",
+                    "label": "STRAPI, REACT",
+                    "title": "Chef Portfolio",
+                    "image": "assets/media/videos/chefPortfolio.gif",
+                    "video": null,
+                    "alt": "Chef Portfolio project showcase - Strapi CMS application"
+                },
+                {
+                    "id": "artisanal-market",
+                    "modalType": "artisanalMarket",
+                    "label": "SHOPIFY, REACT",
+                    "title": "Artisanal Market",
+                    "image": "assets/media/videos/neoBauhaus.gif",
+                    "video": null,
+                    "alt": "Artisanal Market project showcase - Shopify e-commerce application"
+                },
+                {
+                    "id": "hummingbird-pantry",
+                    "modalType": "hummingbirdPantry",
+                    "label": "PROGRESSIVE WEB APP, REACT",
+                    "title": "Hummingbird Pantry",
+                    "image": "assets/media/videos/hummingbirdPantry.gif",
+                    "video": null,
+                    "alt": "Hummingbird Pantry project showcase - progressive web app experience"
+                },
+                {
+                    "id": "bazaar",
+                    "modalType": "bazaar",
+                    "label": "SHOPIFY, REACT",
+                    "title": "Bazaar",
+                    "image": "assets/media/videos/bazaar.gif",
+                    "video": null,
+                    "alt": "Bazaar project showcase - Shopify application"
+                }
+            ],
+            "journey": {
+                "title": "My Journey",
+                "items": [
+                    {
+                        "id": "origin",
+                        "title": "I was born in California & raised with Aloha",
+                        "content": "Growing up between two worlds shaped my perspective on design and creativity. The laid-back beach culture of California mixed with the warm, community-focused spirit of Hawaiian Aloha taught me to approach every project with authenticity and heart."
+                    },
+                    {
+                        "id": "inspiration",
+                        "title": "I grew up playing Nintendo, reading comic books & watching the 49ers",
+                        "content": "These childhood passions instilled in me a love for storytelling, visual narratives, and the power of iconic design. From pixel art to comic panels to team logos, I learned that great design creates emotional connections and lasting memories."
+                    },
+                    {
+                        "id": "skate",
+                        "title": "I rode a skateboard, wore Stüssy & listened to Wu-Tang",
+                        "content": "In 1993, I bought my first skateboard—and in many ways, it changed everything. It became more than a way to move through the world; it was a form of expression, freedom, and identity. Through skateboarding, I found community, confidence, and a creative outlet that would inform my approach to design for years to come."
+                    },
+                    {
+                        "id": "career",
+                        "title": "I worked my way up from an intern to Executive Creative Director",
+                        "content": "My career journey taught me that great design comes from curiosity, persistence, and always being willing to learn. Starting from the bottom gave me respect for every role in the creative process and shaped my collaborative approach to leadership."
+                    },
+                    {
+                        "id": "today",
+                        "title": "Now I'm an Independent Designer & Executive Creative Director",
+                        "content": "Today, I bring together decades of experience to help brands tell their stories through bold, authentic design. I work with companies who value creativity, craftsmanship, and the power of visual communication to connect with audiences in meaningful ways."
+                    }
+                ]
+            },
+            "panels": [
+                {
+                    "id": "panel1",
+                    "number": "01",
+                    "title": "Creative Excellence",
+                    "description": "We bring bold ideas to life through innovative design and strategic thinking. Our approach combines aesthetic excellence with functional purpose, creating experiences that resonate with audiences and drive meaningful engagement.",
+                    "background": "#E8CEBA",
+                    "theme": "light"
+                },
+                {
+                    "id": "panel2",
+                    "number": "02",
+                    "title": "Digital Innovation",
+                    "description": "Creating immersive digital environments that captivate audiences and deliver memorable user experiences across all platforms. From web to mobile, we craft digital solutions that push boundaries and set new standards.",
+                    "background": "#d4c5b9",
+                    "theme": "light"
+                },
+                {
+                    "id": "panel3",
+                    "number": "03",
+                    "title": "Brand Identity",
+                    "description": "Developing distinctive brand identities that resonate with audiences and stand out in today's competitive landscape. We create cohesive visual languages that tell compelling stories and build lasting connections.",
+                    "background": "#c0b1a5",
+                    "theme": "light"
+                },
+                {
+                    "id": "panel4",
+                    "number": "04",
+                    "title": "Motion & Interactive",
+                    "description": "Bringing static designs to life through motion graphics and interactive elements that engage and inspire. Our animation work adds depth and dimension to digital experiences, creating moments of delight and wonder.",
+                    "background": "#1a3a52",
+                    "theme": "dark"
+                }
+            ],
+            "menu": [
+                {
+                    "id": "who-dis",
+                    "title": "WHO DIS",
+                    "background": "#d4d4c8",
+                    "content": {
+                        "title": "WHO DIS",
+                        "text": "Welcome to our creative studio. We're a team of passionate designers, art directors, and visual storytellers dedicated to pushing the boundaries of creative expression. Our work spans multiple disciplines, bringing innovative solutions to brands and projects worldwide."
+                    }
+                },
+                {
+                    "id": "art-direction",
+                    "title": "ART DIRECTION",
+                    "background": "#4a5a8a",
+                    "content": {
+                        "title": "ART DIRECTION",
+                        "text": "Our art direction services bring cohesive visual narratives to life. We craft compelling visual strategies that communicate your brand's story with impact and authenticity. From concept to execution, we ensure every element aligns with your vision."
+                    }
+                },
+                {
+                    "id": "design",
+                    "title": "DESIGN",
+                    "background": "#e84c3d",
+                    "content": {
+                        "title": "DESIGN",
+                        "text": "Design is at the heart of everything we do. We create bold, memorable visual experiences across digital and print media. Our design approach balances aesthetics with functionality, ensuring your message resonates with your audience."
+                    }
+                },
+                {
+                    "id": "editorial",
+                    "title": "EDITORIAL",
+                    "background": "#3a5a3a",
+                    "content": {
+                        "title": "EDITORIAL",
+                        "text": "Our editorial work combines striking visuals with compelling storytelling. We produce content that engages, informs, and inspires. From magazines to digital publications, we craft narratives that captivate readers and leave lasting impressions."
+                    }
+                },
+                {
+                    "id": "illustration",
+                    "title": "ILLUSTRATION",
+                    "background": "#9b7b6b",
+                    "content": {
+                        "title": "ILLUSTRATION",
+                        "text": "Custom illustrations add unique character to any project. Our illustrators create original artwork that brings concepts to life with personality and flair. Whether bold and graphic or detailed and intricate, we tailor our style to your needs."
+                    }
+                }
+            ]
+        }
+    </script>
     <script src="assets/js/main.js"></script>
 </body> 
 </html>

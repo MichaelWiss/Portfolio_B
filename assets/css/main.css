@@ -8,15 +8,10 @@
    ========================================================================== */
 
 /* Typed custom properties so we can animate background offsets reliably */
-@property --bgX {
-    syntax: '<length-percentage>';
-    inherits: true;
+@property --highlight {
+    syntax: '<percentage>';
+    inherits: false;
     initial-value: 0%;
-}
-@property --bgY {
-    syntax: '<length-percentage>';
-    inherits: true;
-    initial-value: 50%;
 }
 
 :root {
@@ -24,6 +19,9 @@
     --color-primary: #2E2520;
     --color-background: #E8CEBA;
     --color-accent: #D44D35;
+    --color-accent-soft: #f06a47;
+    --color-brown-warm: #4a2d24;
+    --color-brown-return: #7a3426;
     --color-blue: #1a3a52;
     --color-panel-2: #d4c5b9;
     --color-panel-3: #c0b1a5;
@@ -95,15 +93,6 @@ body {
     opacity: 0;
     transform: translateY(50px);
     animation: fadeInUp 0.8s cubic-bezier(0.33, 1, 0.68, 1) forwards;
-    /* Clip gradient at word level and align to hero via offsets */
-    background-image: inherit;
-    background-size: var(--bgW, 200% 200%);
-    background-position: calc(var(--bgX) - var(--offsetX, 0px)) calc(var(--bgY) - var(--offsetY, 0px));
-    background-repeat: no-repeat;
-    -webkit-background-clip: text; /* WebKit/Blink */
-    background-clip: text;         /* Firefox */
-    -webkit-text-fill-color: transparent; /* WebKit/Blink */
-    color: transparent; /* Firefox */
     backface-visibility: hidden;
     will-change: transform, opacity;
 }
@@ -116,35 +105,37 @@ body {
 }
 
 .gradient-text {
-    /* Defaults for animated gradient */
-    --bgX: 0%;
-    --bgY: 50%;
-    background: linear-gradient(135deg, 
-        var(--color-primary) 0%, 
-        var(--color-primary) 40%, 
-        var(--color-accent) 60%, 
-        var(--color-primary) 80%,
-        var(--color-primary) 100%);
+    --highlight: -20%;
+    background-color: var(--color-primary);
+    background-image: linear-gradient(
+        112deg,
+        #2b1d17 calc(var(--highlight) - 55%),
+        #34221b calc(var(--highlight) - 35%),
+        #493025 calc(var(--highlight) - 20%),
+        #653728 calc(var(--highlight) - 8%),
+        var(--color-accent) calc(var(--highlight) + 2%),
+        var(--color-accent-soft) calc(var(--highlight) + 12%),
+        #b14933 calc(var(--highlight) + 26%),
+        #7a3426 calc(var(--highlight) + 38%),
+        #4a231b calc(var(--highlight) + 50%),
+        var(--color-primary) calc(var(--highlight) + 62%)
+    );
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
-    background-size: 200% 200%;
-    background-position: var(--bgX) var(--bgY);
-    animation: subtleGradientShift 12s ease infinite;
+    color: transparent;
+    animation: heroGradientWave 40s ease-in-out infinite;
+    animation-fill-mode: both;
 }
 
-@keyframes subtleGradientShift {
-    0%, 100% { 
-        --bgX: 0%;
+@keyframes heroGradientWave {
+    from {
+        --highlight: -20%;
     }
-    25% {
-        --bgX: 30%;
-    }
-    50% { 
-        --bgX: 100%;
-    }
-    75% {
-        --bgX: 70%;
+    to {
+        --highlight: 120%;
     }
 }
 
@@ -510,6 +501,20 @@ body {
     color: #E8CEBA;
 }
 
+#panel4 .vertical-line {
+    background: #E8CEBA;
+}
+
+.panel--dark .panel-number,
+.panel--dark .panel-title,
+.panel--dark .panel-description {
+    color: #E8CEBA;
+}
+
+.panel--dark .vertical-line {
+    background: #E8CEBA;
+}
+
 /* Sliding Menu Styles */
 .menu-container {
     position: relative;
@@ -757,6 +762,11 @@ video {
     border-radius: 4px;
 }
 
+.contact-placeholder {
+    height: 1px;
+    width: 100%;
+}
+
 /* ==========================================================================
    Reduced Motion Support (Accessibility)
    ========================================================================== */
@@ -843,6 +853,23 @@ video {
         margin: 0 -20px 40px -20px;
     }
 
+    .marquee {
+        animation: none;
+        overflow-x: auto;
+        padding: 0 20px;
+        scroll-snap-type: x mandatory;
+        gap: 20px;
+    }
+
+    .grate-card {
+        width: 260px;
+        scroll-snap-align: start;
+    }
+
+    .grate-image {
+        height: 340px;
+    }
+
     .accordion-section {
         margin: 0 -20px 40px -20px;
         padding: 60px 20px;
@@ -866,6 +893,8 @@ video {
     }
 
     .panel {
+        height: auto;
+        position: relative;
         grid-template-columns: 60px 1px 1fr;
         margin: 0 -20px;
     }
@@ -880,6 +909,8 @@ video {
 
     .menu-item {
         padding-left: 20px;
+        height: auto;
+        min-height: 120px;
     }
 
     .menu-item:hover {
@@ -893,6 +924,7 @@ video {
 
     .detail-content {
         padding: 30px;
+        min-height: auto;
     }
 
     .close-btn {

@@ -1,7 +1,10 @@
 {
   "site": {
     "title": "Michael Wiss",
-    "heroText": "Michael Wiss is a creative developer who makes everything DAZZLING. We make work across all mediums and platforms: branding, digital, motion, illustration, environmental, print, packaging & more."
+    "heroText": "Michael Wiss is a creative developer who makes everything DAZZLING. I make work across all mediums and platforms: branding, digital, motion, illustration, environmental, print, packaging & more.",
+    "heroSparkleWords": [
+      "DAZZLING"
+    ]
   },
   "navigation": {
     "logo": "Michael Wiss",
@@ -23,57 +26,84 @@
   "projects": [
     {
       "id": "printed-poster",
+      "modalType": "printedPoster",
       "label": "SHOPIFY, NEXT, REACT",
       "title": "Printed Poster",
       "image": "assets/media/videos/printedPoster.gif",
       "video": "assets/media/videos/printedPoster.mov",
-      "alt": "Printed Poster project"
+      "alt": "Printed Poster project showcase - Shopify e-commerce application"
     },
     {
-      "id": "runners-rotation", 
+      "id": "runners-rotation",
+      "modalType": "runnersRotation",
       "label": "SHOPIFY, NEXT, REACT",
       "title": "Runners Rotation",
       "image": "assets/media/videos/runnersRotation.gif",
       "video": "assets/media/videos/runnersRotation.mov",
-      "alt": "Runners Rotation project"
+      "alt": "Runners Rotation project showcase - Shopify e-commerce application"
     },
     {
-      "id": "tree-grates",
-      "label": "GRATES",
-      "title": "Tree grates",
-      "image": "https://images.unsplash.com/photo-1520998397414-efd172ad0f16?w=800&q=80",
-      "video": "assets/media/videos/tree-grates-ui.mov",
-      "alt": "Tree grates project"
+      "id": "chef-portfolio",
+      "modalType": "chefPortfolio",
+      "label": "STRAPI, REACT",
+      "title": "Chef Portfolio",
+      "image": "assets/media/videos/chefPortfolio.gif",
+      "video": null,
+      "alt": "Chef Portfolio project showcase - Strapi CMS application"
     },
     {
-      "id": "bathroom-grates",
-      "label": "GRATES", 
-      "title": "Bathroom grates",
-      "image": "https://images.unsplash.com/photo-1552321554-5fefe8c9ef14?w=800&q=80",
-      "video": "assets/media/videos/bathroom-grates-ui.mov",
-      "alt": "Bathroom grates project"
+      "id": "artisanal-market",
+      "modalType": "artisanalMarket",
+      "label": "SHOPIFY, REACT",
+      "title": "Artisanal Market",
+      "image": "assets/media/videos/neoBauhaus.gif",
+      "video": null,
+      "alt": "Artisanal Market project showcase - Shopify e-commerce application"
+    },
+    {
+      "id": "hummingbird-pantry",
+      "modalType": "hummingbirdPantry",
+      "label": "PROGRESSIVE WEB APP, REACT",
+      "title": "Hummingbird Pantry",
+      "image": "assets/media/videos/hummingbirdPantry.gif",
+      "video": null,
+      "alt": "Hummingbird Pantry project showcase - progressive web app experience"
+    },
+    {
+      "id": "bazaar",
+      "modalType": "bazaar",
+      "label": "SHOPIFY, REACT",
+      "title": "Bazaar",
+      "image": "assets/media/videos/bazaar.gif",
+      "video": null,
+      "alt": "Bazaar project showcase - Shopify application"
     }
   ],
   "journey": {
     "title": "My Journey",
     "items": [
       {
+        "id": "origin",
         "title": "I was born in California & raised with Aloha",
         "content": "Growing up between two worlds shaped my perspective on design and creativity. The laid-back beach culture of California mixed with the warm, community-focused spirit of Hawaiian Aloha taught me to approach every project with authenticity and heart."
       },
       {
+        "id": "inspiration",
         "title": "I grew up playing Nintendo, reading comic books & watching the 49ers",
         "content": "These childhood passions instilled in me a love for storytelling, visual narratives, and the power of iconic design. From pixel art to comic panels to team logos, I learned that great design creates emotional connections and lasting memories."
       },
       {
+        "id": "skate",
         "title": "I rode a skateboard, wore Stüssy & listened to Wu-Tang",
         "content": "In 1993, I bought my first skateboard—and in many ways, it changed everything. It became more than a way to move through the world; it was a form of expression, freedom, and identity. Through skateboarding, I found community, confidence, and a creative outlet that would inform my approach to design for years to come."
       },
       {
+        "id": "career",
         "title": "I worked my way up from an intern to Executive Creative Director",
         "content": "My career journey taught me that great design comes from curiosity, persistence, and always being willing to learn. Starting from the bottom gave me respect for every role in the creative process and shaped my collaborative approach to leadership."
       },
       {
+        "id": "today",
         "title": "Now I'm an Independent Designer & Executive Creative Director",
         "content": "Today, I bring together decades of experience to help brands tell their stories through bold, authentic design. I work with companies who value creativity, craftsmanship, and the power of visual communication to connect with audiences in meaningful ways."
       }
@@ -85,28 +115,32 @@
       "number": "01",
       "title": "Creative Excellence",
       "description": "We bring bold ideas to life through innovative design and strategic thinking. Our approach combines aesthetic excellence with functional purpose, creating experiences that resonate with audiences and drive meaningful engagement.",
-      "background": "#E8CEBA"
+      "background": "#E8CEBA",
+      "theme": "light"
     },
     {
-      "id": "panel2", 
+      "id": "panel2",
       "number": "02",
       "title": "Digital Innovation",
       "description": "Creating immersive digital environments that captivate audiences and deliver memorable user experiences across all platforms. From web to mobile, we craft digital solutions that push boundaries and set new standards.",
-      "background": "#d4c5b9"
+      "background": "#d4c5b9",
+      "theme": "light"
     },
     {
       "id": "panel3",
-      "number": "03", 
+      "number": "03",
       "title": "Brand Identity",
       "description": "Developing distinctive brand identities that resonate with audiences and stand out in today's competitive landscape. We create cohesive visual languages that tell compelling stories and build lasting connections.",
-      "background": "#c0b1a5"
+      "background": "#c0b1a5",
+      "theme": "light"
     },
     {
       "id": "panel4",
       "number": "04",
-      "title": "Motion & Interactive", 
+      "title": "Motion & Interactive",
       "description": "Bringing static designs to life through motion graphics and interactive elements that engage and inspire. Our animation work adds depth and dimension to digital experiences, creating moments of delight and wonder.",
-      "background": "#1a3a52"
+      "background": "#1a3a52",
+      "theme": "dark"
     }
   ],
   "menu": [
@@ -121,20 +155,20 @@
     },
     {
       "id": "art-direction",
-      "title": "ART DIRECTION", 
+      "title": "ART DIRECTION",
       "background": "#4a5a8a",
       "content": {
         "title": "ART DIRECTION",
-        "text": "Our art direction brings cohesive visual storytelling to every project. We craft distinctive visual languages that capture brand essence and create memorable experiences across all touchpoints."
+        "text": "Our art direction services bring cohesive visual narratives to life. We craft compelling visual strategies that communicate your brand's story with impact and authenticity. From concept to execution, we ensure every element aligns with your vision."
       }
     },
     {
       "id": "design",
       "title": "DESIGN",
-      "background": "#e84c3d", 
+      "background": "#e84c3d",
       "content": {
         "title": "DESIGN",
-        "text": "Design is at the heart of everything we do. From concept to execution, we create thoughtful, impactful designs that solve problems and inspire action."
+        "text": "Design is at the heart of everything we do. We create bold, memorable visual experiences across digital and print media. Our design approach balances aesthetics with functionality, ensuring your message resonates with your audience."
       }
     },
     {
@@ -142,8 +176,8 @@
       "title": "EDITORIAL",
       "background": "#3a5a3a",
       "content": {
-        "title": "EDITORIAL", 
-        "text": "Our editorial work combines compelling storytelling with striking visuals to create content that engages and informs audiences across print and digital platforms."
+        "title": "EDITORIAL",
+        "text": "Our editorial work combines striking visuals with compelling storytelling. We produce content that engages, informs, and inspires. From magazines to digital publications, we craft narratives that captivate readers and leave lasting impressions."
       }
     },
     {
@@ -152,7 +186,7 @@
       "background": "#9b7b6b",
       "content": {
         "title": "ILLUSTRATION",
-        "text": "Custom illustrations add personality and uniqueness to every project. Our illustration work ranges from hand-drawn artwork to digital creations that bring ideas to life."
+        "text": "Custom illustrations add unique character to any project. Our illustrators create original artwork that brings concepts to life with personality and flair. Whether bold and graphic or detailed and intricate, we tailor our style to your needs."
       }
     }
   ]
