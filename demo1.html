@@ -13,14 +13,14 @@
         <div class="nav-links" id="navLinks"></div>
     </nav>
 
-    <div class="hero-text gradient-text" id="hero" aria-live="polite"></div>
+    <div class="hero-text gradient-text" id="hero"></div>
 
     <div class="blue-marquee-container">
         <div class="blue-marquee" id="nameMarquee" aria-hidden="true"></div>
     </div>
 
     <div class="marquee-container" id="projects">
-        <div class="marquee" id="projectsMarquee" aria-live="polite"></div>
+        <div class="marquee" id="projectsMarquee"></div>
     </div>
 
     <div class="accordion-section" id="resume">
@@ -35,7 +35,7 @@
 
     <!-- Final Thank You Marquee -->
     <div class="thank-you-marquee-container">
-        <div class="thank-you-marquee">
+        <div class="thank-you-marquee" id="thankYouMarquee">
             <div class="thank-you-marquee-text">THANK YOU • THANK YOU • THANK YOU • THANK YOU • THANK YOU • THANK YOU • THANK YOU • THANK YOU • </div>
             <div class="thank-you-marquee-text">THANK YOU • THANK YOU • THANK YOU • THANK YOU • THANK YOU • THANK YOU • THANK YOU • THANK YOU • </div>
         </div>
@@ -50,8 +50,10 @@
                 <button class="close-modal-btn" id="closeModalBtn">×</button>
             </div>
             <div class="modal-body">
-                <div class="video-placeholder" id="videoContainer">
-                    <p>Place your .mov file here</p>
+                <div class="modal-video-container" id="videoContainer">
+                    <div class="video-placeholder">
+                        <p>Project video will appear here.</p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -61,9 +63,9 @@
         {
             "site": {
                 "title": "Michael Wiss",
-                "heroText": "Michael Wiss is a creative developer who makes everything DAZZLING. I make work across all mediums and platforms: branding, digital, motion, illustration, environmental, print, packaging & more.",
+                "heroText": "Michael Wiss is a creative developer who makes everything Magical. I make work across all mediums and platforms: branding, digital, motion, illustration, environmental, print, packaging & more.",
                 "heroSparkleWords": [
-                    "DAZZLING"
+                    "MAGICAL"
                 ]
             },
             "navigation": {
@@ -140,7 +142,7 @@
                 }
             ],
             "journey": {
-                "title": "My Journey",
+                "title": "Projects",
                 "items": [
                     {
                         "id": "origin",

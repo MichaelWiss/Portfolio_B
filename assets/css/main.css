@@ -38,6 +38,9 @@
     --font-size-hero: clamp(40px, 8vw, 120px);
     --font-size-marquee: clamp(50px, 8vw, 100px);
     
+    /* Sparkle accents */
+    --sparkle-color-primary: #231812;
+    
     /* Spacing */
     --spacing-xs: 12px;
     --spacing-sm: 20px;
@@ -105,64 +108,69 @@ body {
 }
 
 .gradient-text {
-    --highlight: -20%;
-    background-color: var(--color-primary);
-    background-image: linear-gradient(
-        112deg,
-        #2b1d17 calc(var(--highlight) - 55%),
-        #34221b calc(var(--highlight) - 35%),
-        #493025 calc(var(--highlight) - 20%),
-        #653728 calc(var(--highlight) - 8%),
-        var(--color-accent) calc(var(--highlight) + 2%),
-        var(--color-accent-soft) calc(var(--highlight) + 12%),
-        #b14933 calc(var(--highlight) + 26%),
-        #7a3426 calc(var(--highlight) + 38%),
-        #4a231b calc(var(--highlight) + 50%),
-        var(--color-primary) calc(var(--highlight) + 62%)
-    );
-    background-repeat: no-repeat;
-    background-size: 100% 100%;
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-    color: transparent;
-    animation: heroGradientWave 40s ease-in-out infinite;
-    animation-fill-mode: both;
-}
-
-@keyframes heroGradientWave {
-    from {
-        --highlight: -20%;
-    }
-    to {
-        --highlight: 120%;
-    }
+    color: var(--color-primary);
 }
 
 .sparkle {
-    display: inline-block;
-    font-size: 0.4em;
-    margin: 0 0.2em;
-    animation: sparkle 1.5s ease-in-out infinite;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: clamp(32px, 4.8vw, 54px);
+    line-height: 1;
+    margin: 0 0.18em;
+    position: relative;
+    color: var(--color-primary);
+    opacity: 0;
+    transform: translateY(50px);
+    animation: fadeInUp 0.8s cubic-bezier(0.33, 1, 0.68, 1) forwards;
+    backface-visibility: hidden;
+    will-change: transform, opacity;
 }
 
-@keyframes sparkle {
-    0%, 100% { 
-        opacity: 1;
-        transform: scale(1) rotate(0deg);
+.sparkle-icon {
+    display: block;
+    width: 1em;
+    height: 1em;
+    transform-origin: center;
+    animation: sparkleRotate 2.4s ease-in-out infinite;
+    animation-delay: calc(var(--sparkle-offset, 0s) + 0.8s);
+}
+
+.sparkle-gradient-stop {
+    stop-color: var(--color-primary);
+    animation: sparkleGradientStart 3.2s ease-in-out infinite;
+}
+
+.sparkle-gradient-stop--end {
+    stop-color: var(--color-brown-return);
+    animation-name: sparkleGradientEnd;
+}
+
+@keyframes sparkleRotate {
+    0%, 100% {
+        transform: rotate(0deg);
     }
-    50% { 
-        opacity: 0.4;
-        transform: scale(1.3) rotate(180deg);
+    50% {
+        transform: rotate(180deg);
     }
 }
 
-.sparkle:nth-child(2) {
-    animation-delay: 0.3s;
+@keyframes sparkleGradientStart {
+    0%, 100% {
+        stop-color: var(--color-primary);
+    }
+    50% {
+        stop-color: var(--color-brown-return);
+    }
 }
 
-.sparkle:nth-child(3) {
-    animation-delay: 0.6s;
+@keyframes sparkleGradientEnd {
+    0%, 100% {
+        stop-color: var(--color-brown-return);
+    }
+    50% {
+        stop-color: var(--color-accent-soft);
+    }
 }
 
 /* ==========================================================================
@@ -232,7 +240,8 @@ body {
 .blue-marquee {
     display: flex;
     white-space: nowrap;
-    animation: scroll 15s linear infinite;
+    will-change: transform;
+    transform: translate3d(0, 0, 0);
 }
 
 .blue-marquee-text {
@@ -241,15 +250,6 @@ body {
     font-weight: 900;
     letter-spacing: 0.1em;
     padding: 0 50px;
-}
-
-@keyframes scroll {
-    0% {
-        transform: translateX(0);
-    }
-    100% {
-        transform: translateX(-50%);
-    }
 }
 
 .marquee-container {
@@ -262,29 +262,16 @@ body {
 .marquee {
     display: flex;
     gap: 24px;
-    animation: scrollProjectCards 30s linear infinite;
     will-change: transform;
-}
-
-.marquee:hover {
-    animation-play-state: paused;
+    /* GPU compositing for smooth animation */
+    transform: translate3d(0, 0, 0);
+    backface-visibility: hidden;
 }
 
 /* 
- * Seamless infinite marquee animation - LEFT TO RIGHT
- * Uses duplicated cards for continuous loop with no gaps
- * Animation moves from left edge to right edge seamlessly
+ * Marquee animation handled by JavaScript for seamless infinite scroll
+ * JS repositions the marquee mid-animation to eliminate visible jump
  */
-@keyframes scrollProjectCards {
-    0% {
-        /* Start with first card at left edge of viewport */
-        transform: translateX(calc(-50% - 12px));
-    }
-    100% {
-        /* End with duplicate set in same position as original started */
-        transform: translateX(0);
-    }
-}
 
 .grate-card {
     flex-shrink: 0;
@@ -648,7 +635,8 @@ body {
 .thank-you-marquee {
     display: flex;
     white-space: nowrap;
-    animation: scrollLeftToRight 20s linear infinite;
+    will-change: transform;
+    transform: translate3d(0, 0, 0);
 }
 
 .thank-you-marquee-text {
@@ -657,15 +645,6 @@ body {
     font-weight: 900;
     letter-spacing: 0.1em;
     padding: 0 50px;
-}
-
-@keyframes scrollLeftToRight {
-    0% {
-        transform: translateX(-100%);
-    }
-    100% {
-        transform: translateX(0);
-    }
 }
 
 .modal {
@@ -692,14 +671,16 @@ body {
 .modal-content {
     background: #E8CEBA;
     border-radius: 8px;
-    max-width: 1200px;
-    width: 100%;
+    max-width: 90vw;
     max-height: 90vh;
     overflow: hidden;
     position: relative;
     transform: scale(0.9);
     transition: transform 0.3s ease;
     border: 3px solid #2E2520;
+    display: flex;
+    flex-direction: column;
+    width: auto;
 }
 
 .modal.active .modal-content {
@@ -741,12 +722,22 @@ body {
 }
 
 .modal-body {
-    padding: 32px;
+    padding: 24px 24px 32px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-video-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    max-width: 100%;
 }
 
 .video-placeholder {
-    width: 100%;
-    aspect-ratio: 16/9;
+    width: auto;
+    max-width: 100%;
     background: #2E2520;
     border-radius: 4px;
     display: flex;
@@ -754,11 +745,16 @@ body {
     justify-content: center;
     color: #E8CEBA;
     font-size: 18px;
+    padding: 40px 60px;
+    text-align: center;
+    min-width: 320px;
+    min-height: 180px;
 }
 
 video {
-    width: 100%;
-    height: 100%;
+    display: block;
+    max-width: 100%;
+    max-height: calc(90vh - 150px);
     border-radius: 4px;
 }
 
