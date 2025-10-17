@@ -260,12 +260,15 @@ body {
 }
 
 .marquee {
-    display: flex;
-    gap: 24px;
     will-change: transform;
     /* GPU compositing for smooth animation */
     transform: translate3d(0, 0, 0);
     backface-visibility: hidden;
+}
+
+.marquee.marquee--desktop {
+    display: flex;
+    gap: 24px;
 }
 
 /* 
@@ -313,12 +316,36 @@ body {
     transform: translate(4px, -4px);
 }
 
-.grate-image {
+.grate-media {
     width: 100%;
     height: 480px;
     object-fit: cover;
     border-radius: 4px;
     border: 2px solid #2E2520;
+    display: block;
+}
+
+.grate-media-fallback {
+    width: 100%;
+    height: 480px;
+    object-fit: cover;
+    border-radius: 4px;
+    border: 2px solid #2E2520;
+    display: block;
+}
+
+.grate-media--placeholder {
+    width: 100%;
+    height: 480px;
+    border-radius: 4px;
+    border: 2px dashed rgba(46, 37, 32, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 16px;
+    color: rgba(46, 37, 32, 0.6);
+    font-size: 16px;
 }
 
 .accordion-section {
@@ -820,20 +847,34 @@ video {
     }
     
     .sticky-nav {
-        padding: 0 20px;
-        height: 70px;
+        padding: 16px 20px;
+        height: auto;
+        flex-direction: column;
+        align-items: stretch;
+        justify-content: center;
+        gap: 12px;
     }
 
     .nav-logo {
         font-size: 20px;
+        width: 100%;
+        text-align: center;
     }
 
     .nav-links {
-        gap: 20px;
+        width: 100%;
+        justify-content: space-evenly;
+        gap: 0;
+        margin: 0;
     }
 
     .nav-link {
         font-size: 14px;
+        flex: 1 1 0;
+        min-width: 0;
+        display: block;
+        text-align: center;
+        padding: 4px 0;
     }
     
     .blue-marquee-container {
@@ -849,7 +890,7 @@ video {
         margin: 0 -20px 40px -20px;
     }
 
-    .marquee {
+    .marquee.marquee--desktop {
         animation: none;
         overflow-x: auto;
         padding: 0 20px;
@@ -857,13 +898,41 @@ video {
         gap: 20px;
     }
 
-    .grate-card {
+    .marquee.marquee--desktop .grate-card {
         width: 260px;
         scroll-snap-align: start;
     }
 
-    .grate-image {
+    .grate-media {
         height: 340px;
+    }
+
+    .grate-media-fallback,
+    .grate-media--placeholder {
+        height: 340px;
+    }
+
+    #projectsMarquee.projects-gallery {
+        display: grid;
+        gap: 20px;
+        padding: 0;
+        overflow: visible;
+        scroll-snap-type: none;
+    }
+
+    #projectsMarquee.projects-gallery .grate-card {
+        width: 100%;
+        scroll-snap-align: unset;
+        border: 1px solid rgba(46, 37, 32, 0.2);
+        border-radius: 6px;
+        padding: 16px;
+    }
+
+    #projectsMarquee.projects-gallery .grate-media,
+    #projectsMarquee.projects-gallery .grate-media-fallback,
+    #projectsMarquee.projects-gallery .grate-media--placeholder {
+        height: auto;
+        aspect-ratio: 3 / 4;
     }
 
     .accordion-section {
