@@ -6,7 +6,8 @@ Michael Wiss portfolio website with modern architecture and separated concerns.
 
 ```
 Portfolio_B/
-├── demo1.html              # Main development file (latest version)
+├── index.html              # Main site entry (optimized for deployment)
+├── demo1.html              # Legacy redirect to index.html
 ├── assets/
 │   ├── css/
 │   │   ├── main.css        # Main stylesheet (extracted from HTML)
@@ -33,7 +34,7 @@ Portfolio_B/
 
 ## Development
 
-The main development file is `demo1.html`. It now uses:
+The main development file is `index.html` (formerly `demo1.html`). It now uses:
 - External CSS: `assets/css/main.css`
 - External JS: `assets/js/main.js`
 - Organized media files in `assets/media/videos/`
@@ -66,4 +67,13 @@ When ready for further improvements:
 
 ## Usage
 
-Open `demo1.html` in a browser to view the portfolio. All functionality should work identically to before, but now with better organization and maintainability.
+Open `index.html` in a browser (or deploy via Vercel for a production-ready preview). The legacy `demo1.html` simply redirects to the root for backward compatibility.
+
+## Deployment
+
+### Vercel
+1. Install the Vercel CLI if needed: `npm i -g vercel`.
+2. From the project root, run `vercel` for a one-time setup (project name is preconfigured in `vercel.json`).
+3. Subsequent deploys can use `vercel --prod` to publish production builds.
+
+The included `vercel.json` enables clean URLs and keeps older `/demo1` links working by redirecting them to `/`. All assets are served statically, so no build step is required.

@@ -81,6 +81,7 @@ async function fetchJson(url) {
 async function loadContentFallback() {
     const inlineData = readInlineContentData();
     if (inlineData) {
+        verifyInlineContentSync(inlineData);
         return inlineData;
     }
 
@@ -130,6 +131,34 @@ function loadContentViaXHR() {
         xhr.onerror = () => reject(new Error('XHR request experienced a network error'));
         xhr.send(null);
     });
+}
+
+function verifyInlineContentSync(inlineData) {
+    if (!inlineData || window.location.protocol !== 'file:') {
+        return;
+    }
+
+    (async () => {
+        try {
+            const externalData = await loadContentViaXHR();
+            if (externalData && !contentPayloadsMatch(inlineData, externalData)) {
+                console.warn(
+                    'Inline portfolio JSON differs from assets/data/content.json. ' +
+                    'Update demo1.html to keep both sources in sync.'
+                );
+            }
+        } catch (error) {
+            console.warn('Content sync check skipped (unable to read assets/data/content.json):', error);
+        }
+    })();
+}
+
+function contentPayloadsMatch(a, b) {
+    try {
+        return JSON.stringify(a) === JSON.stringify(b);
+    } catch {
+        return false;
+    }
 }
 
 function applyContent(data) {
