@@ -83,7 +83,7 @@
     "title": "My Journey",
     "items": [
       {
-        "id": "hummingbirdPantry",
+        "id": "hummingbird-pantry",
         "title": "HummingbirdPantry — Smart pantry PWA (React/TS",
         "content": "Designed and built a multimodal, offline-first pantry manager with barcode scanning (ZXing), voice/camera hooks, and a hardened dev setup (local HTTPS, secrets scanning, Playwright/Vitest). Established a modular React + TypeScript (Vite) architecture with Zustand and Tailwind + Radix UI for fast, testable feature work. Impact: simplified item intake to “scan-and-stash,” laying groundwork for AI-assisted lists and background sync."
       },
