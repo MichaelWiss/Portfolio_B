@@ -307,12 +307,15 @@ body {
     gap: 8px;
 }
 
-.arrow {
-    font-size: 20px;
+.arrow-icon {
+    width: 22px;
+    height: 22px;
+    flex-shrink: 0;
     transition: transform 0.3s ease;
+    display: block;
 }
 
-.grate-card:hover .arrow {
+.grate-card:hover .arrow-icon {
     transform: translate(4px, -4px);
 }
 

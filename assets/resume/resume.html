@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Michael R. Wiss - Resume</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #1a1a1a;
+            --secondary-color: #666666;
+            --accent-color: #e91e63;
+            --light-pink: #fff5f7;
+            --border-color: #e0e0e0;
+            --hover-color: #f8f8f8;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Georgia', serif;
+            color: var(--primary-color);
+            line-height: 1.6;
+            background-color: #ffffff;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        a:hover {
+            color: var(--accent-color);
+        }
+
+        header {
+            padding: 3rem 0;
+            border-bottom: 1px solid var(--border-color);
+            background-color: #ffffff;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        .hero-section {
+            text-align: center;
+            padding: 2rem 0;
+        }
+
+        .hero-title {
+            font-size: clamp(2.6rem, 5vw, 3.4rem);
+            font-weight: 700;
+            letter-spacing: -2px;
+            margin-bottom: 1rem;
+        }
+
+        .hero-subtitle {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: var(--secondary-color);
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+        }
+
+        .hero-location {
+            font-size: 1.05rem;
+            color: var(--secondary-color);
+            margin-bottom: 2rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .contact-info {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .contact-item {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.6rem;
+            color: var(--primary-color);
+            font-size: 0.95rem;
+            letter-spacing: 0.06em;
+        }
+
+        .contact-item i {
+            font-size: 1.1rem;
+            color: var(--accent-color);
+        }
+
+        main {
+            padding: 3.5rem 0 4.5rem;
+        }
+
+        section + section {
+            margin-top: 4.2rem;
+        }
+
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 1.25rem;
+            font-size: 0.82rem;
+            font-weight: 700;
+            margin-bottom: 2.4rem;
+            padding-bottom: 0.4rem;
+            text-transform: uppercase;
+            letter-spacing: 0.3em;
+            position: relative;
+        }
+
+        .section-title::after {
+            content: "";
+            flex: 1;
+            height: 1px;
+            background: rgba(26, 26, 26, 0.25);
+            margin-top: 0.2rem;
+        }
+
+        .experience-section .section-title {
+            margin-bottom: 2.6rem;
+        }
+
+        .experience-card {
+            margin-bottom: 2.5rem;
+            padding-bottom: 2.5rem;
+            border-bottom: 1px solid rgba(26, 26, 26, 0.15);
+        }
+
+        .experience-card:last-of-type {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .experience-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 1.4rem;
+            margin-bottom: 1.1rem;
+            flex-wrap: wrap;
+        }
+
+        .experience-category {
+            font-size: 0.8rem;
+            color: var(--accent-color);
+            text-transform: uppercase;
+            letter-spacing: 0.14em;
+            margin-bottom: 0.35rem;
+        }
+
+        .experience-title {
+            font-size: 1.6rem;
+            line-height: 1.3;
+            margin-bottom: 0.4rem;
+        }
+
+        .experience-company {
+            font-size: 1.05rem;
+            color: var(--secondary-color);
+            font-weight: 600;
+            margin-bottom: 0.2rem;
+        }
+
+        .experience-period {
+            font-size: 0.95rem;
+            color: rgba(102, 102, 102, 0.9);
+            white-space: nowrap;
+        }
+
+        .experience-description {
+            font-size: 1rem;
+            color: var(--secondary-color);
+            margin-bottom: 1rem;
+            line-height: 1.8;
+        }
+
+        .project-list {
+            margin-top: 1.2rem;
+            padding-left: 1.6rem;
+        }
+
+        .project-item {
+            margin-bottom: 1.1rem;
+            padding-left: 1rem;
+            border-left: 2px solid rgba(26, 26, 26, 0.12);
+        }
+
+        .project-title {
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 0.35rem;
+            line-height: 1.4;
+        }
+
+        .project-description {
+            font-size: 0.96rem;
+            color: var(--secondary-color);
+        }
+
+        .experience-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.55rem;
+            margin-top: 1.1rem;
+            row-gap: 0.6rem;
+        }
+
+        .tag {
+            background-color: #ffe7ef;
+            color: var(--accent-color);
+            padding: 0.28rem 0.9rem;
+            font-size: 0.8rem;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .archives-section {
+            background-color: var(--light-pink);
+            padding: 3rem 0;
+        }
+
+        .archives-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 2rem;
+        }
+
+        .archive-card {
+            background-color: #ffffff;
+            border: 1px solid var(--border-color);
+            padding: 1.8rem;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+        }
+
+        .archive-date {
+            font-size: 0.85rem;
+            color: rgba(26, 26, 26, 0.6);
+        }
+
+        .archive-category {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            color: var(--accent-color);
+            margin-bottom: 0.6rem;
+        }
+
+        .archive-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 0.4rem;
+        }
+
+        .archive-author {
+            font-size: 0.95rem;
+            color: var(--secondary-color);
+            margin-bottom: 0.6rem;
+        }
+
+        .skills-section {
+            padding: 3rem 0;
+            background-color: var(--light-pink);
+        }
+
+        .skills-section .container {
+            padding-bottom: 1.5rem;
+        }
+
+        .skills-overview {
+            border: 1px solid rgba(26, 26, 26, 0.15);
+            border-left: none;
+            border-right: none;
+            margin-bottom: 2.4rem;
+        }
+
+        .skills-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 1.1rem 1.3rem;
+            border-bottom: 1px solid rgba(26, 26, 26, 0.12);
+            font-size: 0.88rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .skills-row:nth-child(odd) {
+            background-color: rgba(233, 30, 99, 0.06);
+        }
+
+        .skills-row:last-child {
+            border-bottom: none;
+        }
+
+        .skills-label {
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .skills-meta {
+            color: rgba(102, 102, 102, 0.9);
+        }
+
+        .skills-featured {
+            margin-bottom: 2.8rem;
+        }
+
+        .skills-featured-title {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.22em;
+            color: var(--accent-color);
+            margin-bottom: 1rem;
+        }
+
+        .skills-featured-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.6rem;
+        }
+
+        .skills-featured-tags .tag {
+            font-size: 0.78rem;
+        }
+
+        .technical-skills {
+            margin-top: 3.4rem;
+        }
+
+        .technical-skills__title {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.28em;
+            color: var(--primary-color);
+            margin-bottom: 1.6rem;
+            border-bottom: 1px solid rgba(26, 26, 26, 0.15);
+            padding-bottom: 0.4rem;
+        }
+
+        .technical-skills__grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 2.2rem;
+        }
+
+        .technical-skills__heading {
+            font-size: 0.95rem;
+            font-weight: 700;
+            margin-bottom: 0.9rem;
+        }
+
+        .technical-skills__list {
+            list-style: none;
+        }
+
+        .technical-skills__list li {
+            padding: 0.45rem 0;
+            color: var(--secondary-color);
+            font-size: 0.92rem;
+        }
+
+        .section-title--icon {
+            gap: 1.5rem;
+        }
+
+        .section-title__icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            border: 1px solid rgba(26, 26, 26, 0.25);
+            background-color: var(--accent-color);
+            transform: rotate(45deg);
+        }
+
+        .section-title__icon span {
+            display: inline-block;
+            transform: rotate(-45deg);
+            color: #ffffff;
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0;
+        }
+
+        .education-section {
+            padding: 3rem 0 0;
+            background-color: var(--light-pink);
+        }
+
+        .education-section .container {
+            padding-top: 2.6rem;
+            padding-bottom: 2.6rem;
+        }
+
+        .education-card {
+            background-color: var(--hover-color);
+            padding: 2rem;
+            border: 1px solid var(--border-color);
+            max-width: 340px;
+        }
+
+        .education-title {
+            font-size: 1.3rem;
+            margin-bottom: 0.45rem;
+            font-weight: 700;
+        }
+
+        .education-school {
+            font-size: 1.05rem;
+            color: var(--secondary-color);
+            margin-bottom: 0.4rem;
+        }
+
+        .education-year {
+            font-size: 0.9rem;
+            color: var(--secondary-color);
+        }
+
+        footer {
+            padding: 3rem 0;
+            text-align: center;
+            border-top: 1px solid var(--border-color);
+            background-color: #ffffff;
+        }
+
+        .footer-content {
+            margin-bottom: 2rem;
+        }
+
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            margin-top: 1.2rem;
+        }
+
+        .social-links a {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 48px;
+            height: 48px;
+            font-size: 1.25rem;
+        }
+
+        .social-links a:hover {
+            color: var(--accent-color);
+        }
+
+        @media (max-width: 992px) {
+            .experience-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .experience-period {
+                white-space: normal;
+            }
+        }
+
+        @media (max-width: 768px) {
+            header {
+                padding: 2.4rem 0;
+            }
+
+            .hero-title {
+                font-size: 2.2rem;
+            }
+
+            .hero-subtitle {
+                font-size: 1.2rem;
+                letter-spacing: 0.1em;
+            }
+
+            .contact-info {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            section + section {
+                margin-top: 3rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="hero-section">
+                <h1 class="hero-title">MICHAEL WISS</h1>
+                <p class="hero-subtitle">Web Developer</p>
+                <p class="hero-location">Minneapolis, New York, Remote</p>
+                <div class="contact-info">
+                    <a href="https://github.com/MichaelWiss" class="contact-item" target="_blank" rel="noreferrer noopener">
+                        <i class="fab fa-github" aria-hidden="true"></i>
+                        <span>github.com/MichaelWiss</span>
+                    </a>
+                    <a href="mailto:michael.wiss@gmail.com" class="contact-item">
+                        <i class="fas fa-envelope" aria-hidden="true"></i>
+                        <span>michael.wiss@gmail.com</span>
+                    </a>
+                    <a href="tel:612-434-7463" class="contact-item">
+                        <i class="fas fa-phone" aria-hidden="true"></i>
+                        <span>612-434-7463</span>
+                    </a>
+                    <a href="assets/resume/Michael-Wiss-Resume.pdf" class="contact-item" target="_blank" rel="noreferrer noopener">
+                        <i class="fas fa-file-pdf" aria-hidden="true"></i>
+                        <span>Download PDF</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <section class="experience-section">
+            <div class="container">
+                <h2 class="section-title">Experience &amp; Projects</h2>
+
+                <article class="experience-card">
+                    <div class="experience-header">
+                        <div>
+                            <p class="experience-category">Freelance &amp; Temporary</p>
+                            <h3 class="experience-title">Web Development</h3>
+                            <p class="experience-company">Independent Contractor</p>
+                        </div>
+                        <p class="experience-period">2013 – Present</p>
+                    </div>
+                    <p class="experience-description">
+                        Building modern web applications with React, TypeScript, and Next.js. Specialising in PWAs, e-commerce solutions,
+                        and headless CMS architectures with a focus on performance, accessibility, and developer experience.
+                    </p>
+                    <div class="project-list">
+                        <div class="project-item">
+                            <div class="project-title"><a href="https://github.com/MichaelWiss" target="_blank" rel="noreferrer noopener">PrintedPoster</a> — Shopify E-Commerce Storefront</div>
+                            <p class="project-description">Production-ready Next.js (App Router) storefront deployed to Vercel with custom product pages, cart flow, and collection filtering.</p>
+                        </div>
+                        <div class="project-item">
+                            <div class="project-title"><a href="https://github.com/MichaelWiss" target="_blank" rel="noreferrer noopener">HummingbirdPantry</a> — Smart Pantry PWA</div>
+                            <p class="project-description">Offline-first pantry management app with barcode scanning, voice/camera hooks, and a hardened Vite + TypeScript tooling setup.</p>
+                        </div>
+                        <div class="project-item">
+                            <div class="project-title"><a href="https://github.com/MichaelWiss" target="_blank" rel="noreferrer noopener">RunnersRotation</a> — Shopify Hydrogen Storefront</div>
+                            <p class="project-description">Modern Hydrogen storefront on Express + Vite with React Router 7, live Storefront API integration, and metafield-driven homepage hero.</p>
+                        </div>
+                        <div class="project-item">
+                            <div class="project-title"><a href="https://github.com/MichaelWiss" target="_blank" rel="noreferrer noopener">Chef Portfolio CMS</a> — Strapi + Next.js Platform</div>
+                            <p class="project-description">Two-app stack pairing Strapi v5 (SQLite) with a Next.js v15 frontend and Tailwind-backed component system for visually rich storytelling.</p>
+                        </div>
+                        <div class="project-item">
+                            <div class="project-title">Mike's Bazaar — Storefront UI Prototype</div>
+                            <p class="project-description">Lightweight HTML/CSS/JS prototype to validate information architecture, visual rhythm, and core interactions ahead of the production build.</p>
+                        </div>
+                        <div class="project-item">
+                            <div class="project-title">Dubrovnikcontemporary.com</div>
+                            <p class="project-description">Gallery website featuring unobtrusive jQuery slideshows and a custom Google Maps integration.</p>
+                        </div>
+                        <div class="project-item">
+                            <div class="project-title">Renovationyc.com</div>
+                            <p class="project-description">WordPress CMS site with jQuery slideshow, mailing list sign-up, and contact form for rapid client updates.</p>
+                        </div>
+                        <div class="project-item">
+                            <div class="project-title">Linzinc.com</div>
+                            <p class="project-description">Rebuilt Flash experience with jQuery technologies, full e-commerce catalogue, and integrated blog + social APIs.</p>
+                        </div>
+                    </div>
+                    <div class="experience-tags">
+                        <span class="tag">React</span>
+                        <span class="tag">TypeScript</span>
+                        <span class="tag">Next.js</span>
+                        <span class="tag">Gatsby</span>
+                        <span class="tag">Shopify</span>
+                        <span class="tag">JavaScript</span>
+                        <span class="tag">HTML5</span>
+                        <span class="tag">CSS3</span>
+                    </div>
+                </article>
+
+                <article class="experience-card">
+                    <div class="experience-header">
+                        <div>
+                            <p class="experience-category">Web Management</p>
+                            <h3 class="experience-title">WhyHunger</h3>
+                            <p class="experience-company">Web Manager</p>
+                        </div>
+                        <p class="experience-period">Aug 2012 – Mar 2013</p>
+                    </div>
+                    <p class="experience-description">
+                        Maintained large Symphony and WordPress sites under the WhyHunger umbrella, including blog.whyhunger and
+                        usfoodsovereigntyalliance. Delivered the organisation's first responsive fundraising experience.
+                    </p>
+                    <div class="experience-tags">
+                        <span class="tag">Symphony CMS</span>
+                        <span class="tag">WordPress</span>
+                        <span class="tag">Responsive Design</span>
+                        <span class="tag">Fundraising Platform</span>
+                    </div>
+                </article>
+
+                <article class="experience-card">
+                    <div class="experience-header">
+                        <div>
+                            <p class="experience-category">Sales &amp; Management</p>
+                            <h3 class="experience-title">Phaidon Bookstore</h3>
+                            <p class="experience-company">Assistant Manager</p>
+                        </div>
+                        <p class="experience-period">2010 – 2011</p>
+                    </div>
+                    <p class="experience-description">
+                        Led a fine-art sales team generating roughly $7k weekly revenue from limited edition prints. Managed store
+                        operations and designed merchandising displays for a discerning clientele.
+                    </p>
+                    <div class="experience-tags">
+                        <span class="tag">Sales Management</span>
+                        <span class="tag">Fine Art</span>
+                        <span class="tag">Customer Service</span>
+                        <span class="tag">Visual Merchandising</span>
+                    </div>
+                </article>
+
+                <article class="experience-card">
+                    <div class="experience-header">
+                        <div>
+                            <p class="experience-category">Sales &amp; Horticulture</p>
+                            <h3 class="experience-title">Miss K Greenhouses Inc.</h3>
+                            <p class="experience-company">Sales Coordinator</p>
+                        </div>
+                        <p class="experience-period">2006 – 2009</p>
+                    </div>
+                    <p class="experience-description">
+                        Sold perennials, annuals, and tropicals at Union Square Greenmarket in NYC. Designed seasonal floor layouts,
+                        supervised customer service, and nurtured vendor relationships.
+                    </p>
+                    <div class="experience-tags">
+                        <span class="tag">Sales</span>
+                        <span class="tag">Customer Service</span>
+                        <span class="tag">Horticulture</span>
+                        <span class="tag">Visual Merchandising</span>
+                    </div>
+                </article>
+
+                <article class="experience-card">
+                    <div class="experience-header">
+                        <div>
+                            <p class="experience-category">Graphic Design</p>
+                            <h3 class="experience-title">Taymark Inc.</h3>
+                            <p class="experience-company">Art Room Specialist</p>
+                        </div>
+                        <p class="experience-period">2005</p>
+                    </div>
+                    <p class="experience-description">
+                        Prepared graphics and text for promotional items, created branding elements, and ensured print-ready assets for
+                        client orders.
+                    </p>
+                    <div class="experience-tags">
+                        <span class="tag">Graphic Design</span>
+                        <span class="tag">Branding</span>
+                        <span class="tag">Prepress</span>
+                        <span class="tag">Customer Relations</span>
+                    </div>
+                </article>
+
+                <article class="experience-card">
+                    <div class="experience-header">
+                        <div>
+                            <p class="experience-category">Printing &amp; Production</p>
+                            <h3 class="experience-title">Better Mousetrap LLC.</h3>
+                            <p class="experience-company">Prepress Assistant</p>
+                        </div>
+                        <p class="experience-period">2004</p>
+                    </div>
+                    <p class="experience-description">
+                        Operated large-scale ink presses, troubleshot prepress files, coordinated mailroom operations, and kept clients
+                        informed of job status.
+                    </p>
+                    <div class="experience-tags">
+                        <span class="tag">Prepress</span>
+                        <span class="tag">Printing Operations</span>
+                        <span class="tag">File Management</span>
+                        <span class="tag">Customer Service</span>
+                    </div>
+                </article>
+
+                <article class="experience-card">
+                    <div class="experience-header">
+                        <div>
+                            <p class="experience-category">Art &amp; Photography</p>
+                            <h3 class="experience-title">Bill Beckley</h3>
+                            <p class="experience-company">Artist Assistant</p>
+                        </div>
+                        <p class="experience-period">2004</p>
+                    </div>
+                    <p class="experience-description">
+                        Assisted with the production and assembly of large-format photographic work for Manhattan gallery exhibitions.
+                    </p>
+                    <div class="experience-tags">
+                        <span class="tag">Art Installation</span>
+                        <span class="tag">Photography</span>
+                        <span class="tag">Gallery Operations</span>
+                    </div>
+                </article>
+            </div>
+        </section>
+
+        <section class="archives-section">
+            <div class="container">
+                <h2 class="section-title">From the Archives</h2>
+                <div class="archives-grid">
+                    <article class="archive-card">
+                        <div class="archive-date">2013 – Present</div>
+                        <div class="archive-category">Featured Projects</div>
+                        <h3 class="archive-title">Web Development Portfolio</h3>
+                        <div class="archive-author">Independent Contractor</div>
+                        <p>Gallery websites, e-commerce platforms, and CMS implementations built with React, Gatsby, and Shopify.</p>
+                    </article>
+                    <article class="archive-card">
+                        <div class="archive-date">2012 – 2013</div>
+                        <div class="archive-category">Non-Profit</div>
+                        <h3 class="archive-title">WhyHunger Digital Platform</h3>
+                        <div class="archive-author">Web Manager</div>
+                        <p>First responsive fundraising site, raising over a million dollars annually for WhyHunger.</p>
+                    </article>
+                    <article class="archive-card">
+                        <div class="archive-date">2004 – 2011</div>
+                        <div class="archive-category">Early Career</div>
+                        <h3 class="archive-title">Creative Industries</h3>
+                        <div class="archive-author">Various Roles</div>
+                        <p>Fine art sales, graphic design, and printing operations experience in New York City.</p>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <section class="skills-section">
+            <div class="container">
+                <h2 class="section-title section-title--icon">
+                    <span class="section-title__icon" aria-hidden="true"><span>S</span></span>
+                    Skills
+                </h2>
+
+                <div class="skills-overview">
+                    <div class="skills-row">
+                        <span class="skills-label">Frontend Development</span>
+                        <span class="skills-meta">8 technologies</span>
+                    </div>
+                    <div class="skills-row">
+                        <span class="skills-label">Backend &amp; Tools</span>
+                        <span class="skills-meta">8 technologies</span>
+                    </div>
+                    <div class="skills-row">
+                        <span class="skills-label">E-Commerce Solutions</span>
+                        <span class="skills-meta">5 platforms</span>
+                    </div>
+                    <div class="skills-row">
+                        <span class="skills-label">CMS Development</span>
+                        <span class="skills-meta">4 systems</span>
+                    </div>
+                </div>
+
+                <div class="skills-featured">
+                    <div class="skills-featured-title">Featured Skills</div>
+                    <div class="skills-featured-tags">
+                        <span class="tag">React</span>
+                        <span class="tag">Node</span>
+                        <span class="tag">Gatsby</span>
+                        <span class="tag">Shopify</span>
+                    </div>
+                </div>
+
+                <div class="technical-skills">
+                    <div class="technical-skills__title">Technical Skills</div>
+                    <div class="technical-skills__grid">
+                        <div>
+                            <h3 class="technical-skills__heading">Frontend</h3>
+                            <ul class="technical-skills__list">
+                                <li>HTML5</li>
+                                <li>CSS3</li>
+                                <li>JavaScript</li>
+                                <li>TypeScript</li>
+                                <li>React &amp; React Router</li>
+                                <li>Vue</li>
+                                <li>Styled Components</li>
+                                <li>Responsive Web Design</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h3 class="technical-skills__heading">Backend &amp; Tools</h3>
+                            <ul class="technical-skills__list">
+                                <li>Node.js</li>
+                                <li>GraphQL</li>
+                                <li>Gatsby</li>
+                                <li>Shopify Hydrogen</li>
+                                <li>Git &amp; NPM</li>
+                                <li>WordPress</li>
+                                <li>Strapi CMS</li>
+                                <li>Symphony CMS</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h3 class="technical-skills__heading">Specialisations</h3>
+                            <ul class="technical-skills__list">
+                                <li>JS &amp; CSS Animations</li>
+                                <li>E-Commerce Solutions</li>
+                                <li>API Integration</li>
+                                <li>Content Management Systems</li>
+                                <li>jQuery Plugins</li>
+                                <li>Google &amp; Meta APIs</li>
+                                <li>Social Media APIs</li>
+                                <li>Performance Optimisation</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="education-section">
+            <div class="container">
+                <h2 class="section-title">Education</h2>
+                <div class="education-card">
+                    <h3 class="education-title">School of Visual Arts</h3>
+                    <p class="education-school">Bachelor of Fine Arts</p>
+                    <p class="education-year">2004</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <h3>Let's Connect</h3>
+                <p>Available for freelance and remote opportunities.</p>
+            </div>
+            <div class="social-links">
+                <a href="https://github.com/MichaelWiss" target="_blank" rel="noreferrer noopener"><i class="fab fa-github" aria-hidden="true"></i></a>
+                <a href="https://www.linkedin.com/in/michaelwiss/" target="_blank" rel="noreferrer noopener"><i class="fab fa-linkedin" aria-hidden="true"></i></a>
+                <a href="mailto:michael.wiss@gmail.com"><i class="fas fa-envelope" aria-hidden="true"></i></a>
+            </div>
+            <p class="copyright">© 2024 Michael Wiss. All rights reserved.</p>
+        </div>
+    </footer>
+</body>
+</html>

@@ -11,26 +11,38 @@ const VIDEO_PREVIEW_PATTERN = /\.(webm|mp4|m4v|ogv)$/i;
 const MAX_EAGER_PROJECT_VIDEOS = 1;
 const MAX_EAGER_POSTER_IMAGES = 6;
 const PROJECTS_MOBILE_MEDIA_QUERY = '(max-width: 768px)';
+const RESUME_DRAWER_PATH = 'assets/resume/resume.html';
 let projectsMediaQuery = null;
 let isProjectsMobileView = false;
 let currentProjectsData = [];
 let forceProjectVideoPreviews = false;
 let projectsViewportChangeHandler = null;
+let supportsProjectsWebM = null;
 let sparkleGradientCounter = 0;
 let projectPosterRenderCount = 0;
 const preloadedPosterSet = new Set();
 let isInteractiveInitialized = false;
+let resumeDrawerInitialized = false;
+let resumeDrawerElement = null;
+let resumeDrawerPanelElement = null;
+let resumeDrawerFocusReturn = null;
+let resumeDrawerOverlayElement = null;
+let resumeDrawerTriggerElement = null;
+let resumeDrawerCloseButton = null;
+let resumeDrawerContentLoaded = false;
+let resumeDrawerLoadingPromise = null;
+let resumeDrawerPreviousBodyOverflow = null;
+let resumeDrawerStatusElement = null;
+let resumeDrawerShadowHost = null;
+let resumeDrawerShadowRoot = null;
+let resumeDrawerExternalStylesLoaded = false;
 
 let videoLookup = {};
 let currentVideo = null;
 let currentModalResizeHandler = null;
 let currentModalElements = null;
 
-console.log('JavaScript file loaded');
-
 document.addEventListener('DOMContentLoaded', async () => {
-    console.log('DOMContentLoaded fired');
-
     initProjectsViewportMode();
 
     const inlineData = readInlineContentData();
@@ -46,8 +58,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             applyContent(data);
             initializeInteractiveComponents();
         }
-
-        console.log('Portfolio app initialized successfully');
     } catch (error) {
         console.error('App initialization error:', error);
 
@@ -58,6 +68,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 });
 
 function initializeInteractiveComponents() {
+    initResumeDrawer();
+
     if (isInteractiveInitialized) {
         setupProjectsMarqueeMediaPreloader(document.getElementById('projectsMarquee'));
         return;
@@ -196,6 +208,43 @@ function contentPayloadsMatch(a, b) {
     }
 }
 
+function canPlayProjectWebM() {
+    if (supportsProjectsWebM !== null) {
+        return supportsProjectsWebM;
+    }
+
+    if (typeof document === 'undefined') {
+        supportsProjectsWebM = true;
+        return supportsProjectsWebM;
+    }
+
+    try {
+        const testVideo = document.createElement('video');
+        if (!testVideo || typeof testVideo.canPlayType !== 'function') {
+            supportsProjectsWebM = false;
+            return supportsProjectsWebM;
+        }
+
+        const result = testVideo.canPlayType('video/webm; codecs="vp8, vorbis"')
+            || testVideo.canPlayType('video/webm; codecs="vp9"')
+            || testVideo.canPlayType('video/webm');
+
+        supportsProjectsWebM = typeof result === 'string' && result.trim() !== '';
+    } catch {
+        supportsProjectsWebM = false;
+    }
+
+    return supportsProjectsWebM;
+}
+
+function getMaxEagerProjectVideos() {
+    if (isProjectsMobileView) {
+        return 0;
+    }
+
+    return shouldUseVideoPreviews() ? MAX_EAGER_PROJECT_VIDEOS : 0;
+}
+
 function initProjectsViewportMode() {
     if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') {
         isProjectsMobileView = false;
@@ -302,6 +351,12 @@ function renderNavigation(navigation, site) {
         anchor.className = 'nav-link';
         anchor.href = link.href || '#';
         anchor.textContent = link.text;
+        if ((link.href && link.href.toLowerCase() === '#resume') || normalizeWord(link.text) === 'resume') {
+            anchor.dataset.resumeDrawer = 'true';
+            anchor.setAttribute('role', 'button');
+            anchor.setAttribute('aria-expanded', 'false');
+            anchor.setAttribute('aria-controls', 'resumeDrawer');
+        }
         navLinks.appendChild(anchor);
     });
 }
@@ -434,6 +489,11 @@ function renderProjects(projects = []) {
 
     teardownProjectsMarqueeAnimation(marquee);
 
+    const container = marquee.parentElement;
+    if (container && container.classList) {
+        container.classList.toggle('marquee-container--gallery', isProjectsMobileView);
+    }
+
     marquee.classList.toggle('projects-gallery', isProjectsMobileView);
     marquee.classList.toggle('marquee--desktop', !isProjectsMobileView);
     marquee.classList.remove('marquee--animated');
@@ -444,7 +504,7 @@ function renderProjects(projects = []) {
     marquee.innerHTML = '';
     preloadProjectPosters(projectList);
 
-    forceProjectVideoPreviews = isProjectsMobileView;
+    forceProjectVideoPreviews = isProjectsMobileView && canPlayProjectWebM();
 
     if (!projectList.length) {
         const placeholder = document.createElement('div');
@@ -525,16 +585,35 @@ function createProjectCard(project) {
 
     title.appendChild(document.createTextNode(' '));
 
-    const arrow = document.createElement('span');
-    arrow.className = 'arrow';
-    arrow.textContent = '↗';
-    title.appendChild(arrow);
+    title.appendChild(createArrowIcon());
 
     card.appendChild(label);
     card.appendChild(title);
     card.appendChild(createProjectPreviewMedia(project));
 
     return card;
+}
+
+function createArrowIcon() {
+    const svg = document.createElementNS(SVG_NS, 'svg');
+    svg.classList.add('arrow-icon');
+    svg.setAttribute('viewBox', '0 0 16 16');
+    svg.setAttribute('width', '24');
+    svg.setAttribute('height', '24');
+    svg.setAttribute('aria-hidden', 'true');
+    svg.setAttribute('focusable', 'false');
+
+    const path = document.createElementNS(SVG_NS, 'path');
+    path.setAttribute('d', 'M4 12 L12 4 M7 4 H12 V9');
+    path.setAttribute('fill', 'none');
+    path.setAttribute('stroke', 'currentColor');
+    path.setAttribute('stroke-width', '1.5');
+    path.setAttribute('stroke-linecap', 'round');
+    path.setAttribute('stroke-linejoin', 'round');
+
+    svg.appendChild(path);
+
+    return svg;
 }
 
 function createProjectPreviewMedia(project) {
@@ -686,7 +765,7 @@ function setupProjectsMarqueeMediaPreloader(marquee) {
         }
     };
 
-    const eagerCount = shouldUseVideoPreviews() ? MAX_EAGER_PROJECT_VIDEOS : 0;
+    const eagerCount = Math.max(getMaxEagerProjectVideos(), 0);
     const eagerVideos = videos.slice(0, eagerCount);
     eagerVideos.forEach(loadVideo);
 
@@ -701,6 +780,18 @@ function setupProjectsMarqueeMediaPreloader(marquee) {
         return;
     }
 
+    const observerOptions = isProjectsMobileView
+        ? {
+            root: null,
+            rootMargin: '200px 0px',
+            threshold: 0.1,
+        }
+        : {
+            root: marquee.parentElement,
+            rootMargin: '64px',
+            threshold: 0.2,
+        };
+
     const observer = new IntersectionObserver(entries => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
@@ -708,11 +799,7 @@ function setupProjectsMarqueeMediaPreloader(marquee) {
                 observer.unobserve(entry.target);
             }
         });
-    }, {
-        root: marquee.parentElement,
-        rootMargin: '64px',
-        threshold: 0.2,
-    });
+    }, observerOptions);
 
     remainingVideos.forEach(video => observer.observe(video));
 
@@ -1313,6 +1400,12 @@ function initNavigation() {
 
         document.querySelectorAll('.nav-link').forEach(link => {
             link.addEventListener('click', event => {
+                if (link.dataset.resumeDrawer === 'true') {
+                    event.preventDefault();
+                    openResumeDrawer(link);
+                    return;
+                }
+
                 const targetId = link.getAttribute('href');
                 if (!targetId || !targetId.startsWith('#')) {
                     return;
@@ -1334,6 +1427,348 @@ function initNavigation() {
         });
     } catch (error) {
         console.error('Error initializing navigation:', error);
+    }
+}
+
+function initResumeDrawer() {
+    if (resumeDrawerInitialized) {
+        return;
+    }
+
+    resumeDrawerElement = document.getElementById('resumeDrawer');
+    if (!resumeDrawerElement) {
+        return;
+    }
+
+    resumeDrawerPanelElement = resumeDrawerElement.querySelector('.resume-drawer__panel');
+    resumeDrawerOverlayElement = resumeDrawerElement.querySelector('.resume-drawer__overlay');
+
+    if (!resumeDrawerPanelElement) {
+        console.warn('Resume drawer panel not found');
+        return;
+    }
+
+    resumeDrawerElement.setAttribute('aria-hidden', 'true');
+
+    Object.assign(resumeDrawerElement.style, {
+        position: 'fixed',
+        inset: '0',
+        pointerEvents: 'none',
+        zIndex: '2000',
+    });
+
+    if (resumeDrawerOverlayElement) {
+        Object.assign(resumeDrawerOverlayElement.style, {
+            position: 'absolute',
+            inset: '0',
+            background: 'rgba(0, 0, 0, 0.35)',
+            opacity: '0',
+            transition: 'opacity 0.4s ease',
+            pointerEvents: 'none',
+            zIndex: '2000',
+        });
+    }
+
+    Object.assign(resumeDrawerPanelElement.style, {
+        position: 'absolute',
+        top: '0',
+        right: '0',
+        width: '100vw',
+        height: '100vh',
+        background: '#fff',
+        overflowY: 'auto',
+        padding: 'clamp(1rem, 2vw, 2rem)',
+        transform: 'translateX(100%)',
+        transition: 'transform 0.5s ease',
+        zIndex: '2001',
+    });
+
+    if (!resumeDrawerCloseButton) {
+        resumeDrawerCloseButton = document.createElement('button');
+        resumeDrawerCloseButton.type = 'button';
+        resumeDrawerCloseButton.setAttribute('aria-label', 'Close resume');
+
+        const icon = document.createElement('span');
+        icon.setAttribute('aria-hidden', 'true');
+        icon.textContent = '✕';
+        resumeDrawerCloseButton.appendChild(icon);
+
+        Object.assign(resumeDrawerCloseButton.style, {
+            position: 'sticky',
+            top: '0',
+            margin: '0 0 1rem auto',
+            width: '48px',
+            height: '48px',
+            border: 'none',
+            borderRadius: '999px',
+            fontSize: '1.5rem',
+            color: '#1a1a1a',
+            cursor: 'pointer',
+            display: 'inline-flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: '2101',
+            transition: 'background 0.3s ease, transform 0.3s ease',
+            background: 'rgba(0, 0, 0, 0.05)',
+        });
+
+        const setRestState = () => {
+            resumeDrawerCloseButton.style.background = 'rgba(0, 0, 0, 0.05)';
+            resumeDrawerCloseButton.style.transform = 'scale(1)';
+        };
+
+        const setActiveState = () => {
+            resumeDrawerCloseButton.style.background = 'rgba(0, 0, 0, 0.1)';
+            resumeDrawerCloseButton.style.transform = 'scale(1.05)';
+        };
+
+        resumeDrawerCloseButton.addEventListener('mouseenter', setActiveState);
+        resumeDrawerCloseButton.addEventListener('mouseleave', setRestState);
+        resumeDrawerCloseButton.addEventListener('focus', setActiveState);
+        resumeDrawerCloseButton.addEventListener('blur', setRestState);
+        resumeDrawerCloseButton.addEventListener('click', () => closeResumeDrawer());
+        setRestState();
+    }
+
+    if (!resumeDrawerCloseButton.isConnected) {
+        resumeDrawerPanelElement.appendChild(resumeDrawerCloseButton);
+    }
+
+    if (!resumeDrawerStatusElement) {
+        resumeDrawerStatusElement = document.createElement('p');
+        Object.assign(resumeDrawerStatusElement.style, {
+            padding: '2rem',
+            textAlign: 'center',
+            fontSize: '1rem',
+            color: '#2E2520',
+            display: 'none',
+        });
+    }
+
+    if (!resumeDrawerStatusElement.isConnected) {
+        resumeDrawerPanelElement.appendChild(resumeDrawerStatusElement);
+    }
+
+    if (!resumeDrawerShadowHost) {
+        resumeDrawerShadowHost = document.createElement('div');
+        resumeDrawerShadowHost.style.minHeight = '100%';
+        resumeDrawerShadowHost.style.display = 'block';
+        resumeDrawerShadowHost.style.width = '100%';
+        resumeDrawerShadowRoot = resumeDrawerShadowHost.attachShadow({ mode: 'open' });
+    }
+
+    if (!resumeDrawerShadowHost.isConnected) {
+        resumeDrawerPanelElement.appendChild(resumeDrawerShadowHost);
+    }
+
+    if (!resumeDrawerShadowRoot && resumeDrawerShadowHost) {
+        resumeDrawerShadowRoot = resumeDrawerShadowHost.attachShadow({ mode: 'open' });
+    }
+
+    if (resumeDrawerCloseButton && resumeDrawerCloseButton.isConnected) {
+        resumeDrawerPanelElement.insertBefore(resumeDrawerCloseButton, resumeDrawerPanelElement.firstChild);
+    }
+
+    if (resumeDrawerOverlayElement) {
+        resumeDrawerOverlayElement.addEventListener('click', () => closeResumeDrawer());
+    }
+
+    resumeDrawerElement.removeAttribute('hidden');
+
+    document.addEventListener('keydown', handleResumeDrawerKeydown);
+    resumeDrawerInitialized = true;
+}
+
+async function loadResumeDrawerContent() {
+    if (resumeDrawerContentLoaded || !resumeDrawerPanelElement) {
+        return;
+    }
+
+    if (resumeDrawerLoadingPromise) {
+        return resumeDrawerLoadingPromise;
+    }
+
+    const showLoading = () => {
+        if (resumeDrawerStatusElement) {
+            resumeDrawerStatusElement.textContent = 'Loading resume…';
+            resumeDrawerStatusElement.style.display = 'block';
+        }
+
+        if (resumeDrawerShadowRoot) {
+            resumeDrawerShadowRoot.innerHTML = '';
+        }
+
+        if (resumeDrawerCloseButton && !resumeDrawerCloseButton.isConnected) {
+            resumeDrawerPanelElement.insertBefore(resumeDrawerCloseButton, resumeDrawerPanelElement.firstChild);
+        }
+    };
+
+    resumeDrawerLoadingPromise = (async () => {
+        showLoading();
+
+        const response = await fetch(RESUME_DRAWER_PATH, { cache: 'no-store' });
+        if (!response.ok) {
+            throw new Error(`Failed to load resume drawer content (${response.status})`);
+        }
+
+        const text = await response.text();
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(text, 'text/html');
+
+        if (!resumeDrawerExternalStylesLoaded && doc.head) {
+            const documentHead = document.head || document.getElementsByTagName('head')[0];
+            doc.head.querySelectorAll('link[rel="stylesheet"]').forEach(linkNode => {
+                const href = linkNode.getAttribute('href');
+                if (!href) {
+                    return;
+                }
+                if (!documentHead.querySelector(`link[rel="stylesheet"][href="${href}"]`)) {
+                    documentHead.appendChild(linkNode.cloneNode(true));
+                }
+            });
+            resumeDrawerExternalStylesLoaded = true;
+        }
+
+        if (resumeDrawerStatusElement) {
+            resumeDrawerStatusElement.style.display = 'none';
+        }
+
+        if (resumeDrawerShadowRoot) {
+            resumeDrawerShadowRoot.innerHTML = '';
+
+            if (doc.head) {
+                doc.head.querySelectorAll('link[rel="stylesheet"]').forEach(linkNode => {
+                    resumeDrawerShadowRoot.appendChild(linkNode.cloneNode(true));
+                });
+
+                doc.head.querySelectorAll('style').forEach(styleNode => {
+                    resumeDrawerShadowRoot.appendChild(styleNode.cloneNode(true));
+                });
+            }
+
+            if (doc.body) {
+                resumeDrawerShadowRoot.appendChild(doc.body.cloneNode(true));
+            } else {
+                const wrapper = document.createElement('div');
+                wrapper.innerHTML = text;
+                resumeDrawerShadowRoot.appendChild(wrapper);
+            }
+        }
+
+        if (resumeDrawerPanelElement) {
+            resumeDrawerPanelElement.scrollTop = 0;
+        }
+
+        resumeDrawerContentLoaded = true;
+    })().catch(error => {
+        console.error('Failed to load resume drawer content:', error);
+        if (resumeDrawerShadowRoot) {
+            resumeDrawerShadowRoot.innerHTML = '';
+        }
+        if (resumeDrawerStatusElement) {
+            resumeDrawerStatusElement.textContent = 'Unable to load resume right now.';
+            resumeDrawerStatusElement.style.display = 'block';
+        }
+    }).finally(() => {
+        resumeDrawerLoadingPromise = null;
+    });
+
+    return resumeDrawerLoadingPromise;
+}
+
+async function openResumeDrawer(triggerElement) {
+    if (!resumeDrawerInitialized) {
+        initResumeDrawer();
+    }
+
+    if (!resumeDrawerElement) {
+        return;
+    }
+
+    resumeDrawerTriggerElement = triggerElement || null;
+    resumeDrawerFocusReturn = document.activeElement;
+
+    const loadPromise = loadResumeDrawerContent() || Promise.resolve();
+
+    resumeDrawerElement.setAttribute('aria-hidden', 'false');
+    resumeDrawerElement.style.pointerEvents = 'auto';
+
+    if (resumeDrawerPreviousBodyOverflow === null) {
+        resumeDrawerPreviousBodyOverflow = document.body.style.overflow || '';
+    }
+    document.body.style.overflow = 'hidden';
+
+    if (resumeDrawerOverlayElement) {
+        resumeDrawerOverlayElement.style.pointerEvents = 'auto';
+        resumeDrawerOverlayElement.style.opacity = '1';
+    }
+
+    resumeDrawerPanelElement.style.transform = 'translateX(0)';
+
+    if (resumeDrawerTriggerElement && typeof resumeDrawerTriggerElement.setAttribute === 'function') {
+        resumeDrawerTriggerElement.setAttribute('aria-expanded', 'true');
+    }
+
+    try {
+        await loadPromise;
+    } catch (error) {
+        // load errors are logged inside loadResumeDrawerContent
+    }
+
+    if (resumeDrawerElement.getAttribute('aria-hidden') === 'false') {
+        if (resumeDrawerCloseButton && typeof resumeDrawerCloseButton.focus === 'function') {
+            resumeDrawerCloseButton.focus();
+        } else if (resumeDrawerPanelElement && typeof resumeDrawerPanelElement.focus === 'function') {
+            resumeDrawerPanelElement.focus({ preventScroll: true });
+        }
+    }
+}
+
+function closeResumeDrawer() {
+    if (!resumeDrawerElement || resumeDrawerElement.getAttribute('aria-hidden') === 'true') {
+        return;
+    }
+
+    resumeDrawerElement.setAttribute('aria-hidden', 'true');
+    resumeDrawerElement.style.pointerEvents = 'none';
+
+    if (resumeDrawerOverlayElement) {
+        resumeDrawerOverlayElement.style.pointerEvents = 'none';
+        resumeDrawerOverlayElement.style.opacity = '0';
+    }
+
+    resumeDrawerPanelElement.style.transform = 'translateX(100%)';
+
+    if (resumeDrawerPanelElement) {
+        resumeDrawerPanelElement.scrollTop = 0;
+    }
+
+    if (resumeDrawerPreviousBodyOverflow !== null) {
+        document.body.style.overflow = resumeDrawerPreviousBodyOverflow;
+        resumeDrawerPreviousBodyOverflow = null;
+    }
+
+    if (resumeDrawerTriggerElement && typeof resumeDrawerTriggerElement.setAttribute === 'function') {
+        resumeDrawerTriggerElement.setAttribute('aria-expanded', 'false');
+    }
+
+    const focusTarget = resumeDrawerTriggerElement || resumeDrawerFocusReturn;
+    if (focusTarget && typeof focusTarget.focus === 'function') {
+        focusTarget.focus();
+    }
+
+    resumeDrawerTriggerElement = null;
+    resumeDrawerFocusReturn = null;
+
+    if (resumeDrawerStatusElement) {
+        resumeDrawerStatusElement.style.display = 'none';
+    }
+}
+
+function handleResumeDrawerKeydown(event) {
+    if (event.key === 'Escape' && resumeDrawerElement && resumeDrawerElement.getAttribute('aria-hidden') === 'false') {
+        closeResumeDrawer();
+        event.preventDefault();
     }
 }
 
@@ -1498,133 +1933,15 @@ function initProjectsMarqueeAnimation({ duration = 120000 } = {}) {
     teardownProjectsMarqueeAnimation(marquee);
 
     const cleanupTasks = [];
-    const reduceMotionQuery = typeof window !== 'undefined' && typeof window.matchMedia === 'function'
-        ? window.matchMedia('(prefers-reduced-motion: reduce)')
-        : null;
-
     let pendingStart = null;
     let lastHalfWidth = null;
     let isAnimationActive = true;
 
-    const scheduleMeasurement = () => new Promise(resolve => {
-        requestAnimationFrame(() => {
-            requestAnimationFrame(resolve);
-        });
-    });
+    const reduceMotionQuery = typeof window !== 'undefined' && typeof window.matchMedia === 'function'
+        ? window.matchMedia('(prefers-reduced-motion: reduce)')
+        : null;
 
-    const runAnimation = () => {
-        if (!isAnimationActive) {
-            return Promise.resolve();
-        }
-
-        if (pendingStart) {
-            return pendingStart;
-        }
-
-        if (reduceMotionQuery && reduceMotionQuery.matches) {
-            marquee.classList.remove('marquee--animated');
-            marquee.classList.remove('marquee--paused');
-            marquee.style.transform = '';
-            lastHalfWidth = null;
-            return Promise.resolve();
-        }
-
-        marquee.classList.remove('marquee--animated');
-        marquee.classList.remove('marquee--paused');
-
-        pendingStart = waitForMediaOrTimeout(marquee)
-            .then(scheduleMeasurement)
-            .then(() => {
-                if (!isAnimationActive) {
-                    return;
-                }
-
-                const halfWidth = Math.round(marquee.scrollWidth / 2);
-
-                if (!halfWidth) {
-                    return;
-                }
-
-                if (halfWidth !== lastHalfWidth) {
-                    applyProjectsMarqueeStyles(halfWidth, duration);
-                    lastHalfWidth = halfWidth;
-                }
-
-                marquee.style.transform = `translate3d(-${halfWidth}px, 0, 0)`;
-                marquee.classList.add('marquee--animated');
-            })
-            .finally(() => {
-                pendingStart = null;
-            });
-
-        return pendingStart;
-    };
-
-    const handleResize = () => {
-        lastHalfWidth = null;
-        runAnimation();
-    };
-
-    const handleMouseEnter = () => {
-        if (!isAnimationActive) {
-            return;
-        }
-        marquee.classList.add('marquee--paused');
-    };
-
-    const handleMouseLeave = () => {
-        marquee.classList.remove('marquee--paused');
-    };
-
-    setupProjectsMarqueeMediaPreloader(marquee);
-    runAnimation();
-
-    if (typeof ResizeObserver !== 'undefined') {
-        const resizeObserver = new ResizeObserver(handleResize);
-        resizeObserver.observe(container);
-        cleanupTasks.push(() => resizeObserver.disconnect());
-    } else {
-        window.addEventListener('resize', handleResize);
-        cleanupTasks.push(() => window.removeEventListener('resize', handleResize));
-    }
-
-    container.addEventListener('mouseenter', handleMouseEnter);
-    cleanupTasks.push(() => container.removeEventListener('mouseenter', handleMouseEnter));
-
-    container.addEventListener('mouseleave', handleMouseLeave);
-    cleanupTasks.push(() => container.removeEventListener('mouseleave', handleMouseLeave));
-
-    if (reduceMotionQuery) {
-        const handleMotionChange = () => {
-            if (reduceMotionQuery.matches) {
-                marquee.classList.remove('marquee--animated');
-                marquee.classList.remove('marquee--paused');
-                marquee.style.transform = '';
-            } else {
-                lastHalfWidth = null;
-                setupProjectsMarqueeMediaPreloader(marquee);
-                runAnimation();
-            }
-        };
-
-        if (typeof reduceMotionQuery.addEventListener === 'function') {
-            reduceMotionQuery.addEventListener('change', handleMotionChange);
-            cleanupTasks.push(() => {
-                if (typeof reduceMotionQuery.removeEventListener === 'function') {
-                    reduceMotionQuery.removeEventListener('change', handleMotionChange);
-                }
-            });
-        } else if (typeof reduceMotionQuery.addListener === 'function') {
-            reduceMotionQuery.addListener(handleMotionChange);
-            cleanupTasks.push(() => {
-                if (typeof reduceMotionQuery.removeListener === 'function') {
-                    reduceMotionQuery.removeListener(handleMotionChange);
-                }
-            });
-        }
-    }
-
-    marquee.__projectsMarqueeCleanup = () => {
+    const performCleanup = () => {
         isAnimationActive = false;
         pendingStart = null;
         while (cleanupTasks.length) {
@@ -1637,6 +1954,130 @@ function initProjectsMarqueeAnimation({ duration = 120000 } = {}) {
         }
         marquee.__projectsMarqueeCleanup = null;
     };
+
+    marquee.__projectsMarqueeCleanup = performCleanup;
+
+    try {
+        const scheduleMeasurement = () => new Promise(resolve => {
+            requestAnimationFrame(() => {
+                requestAnimationFrame(resolve);
+            });
+        });
+
+        const runAnimation = () => {
+            if (!isAnimationActive) {
+                return Promise.resolve();
+            }
+
+            if (pendingStart) {
+                return pendingStart;
+            }
+
+            if (reduceMotionQuery && reduceMotionQuery.matches) {
+                marquee.classList.remove('marquee--animated');
+                marquee.classList.remove('marquee--paused');
+                marquee.style.transform = '';
+                lastHalfWidth = null;
+                return Promise.resolve();
+            }
+
+            marquee.classList.remove('marquee--animated');
+            marquee.classList.remove('marquee--paused');
+
+            pendingStart = waitForMediaOrTimeout(marquee)
+                .then(scheduleMeasurement)
+                .then(() => {
+                    if (!isAnimationActive) {
+                        return;
+                    }
+
+                    const halfWidth = Math.round(marquee.scrollWidth / 2);
+
+                    if (!halfWidth) {
+                        return;
+                    }
+
+                    if (halfWidth !== lastHalfWidth) {
+                        applyProjectsMarqueeStyles(halfWidth, duration);
+                        lastHalfWidth = halfWidth;
+                    }
+
+                    marquee.style.transform = `translate3d(-${halfWidth}px, 0, 0)`;
+                    marquee.classList.add('marquee--animated');
+                })
+                .finally(() => {
+                    pendingStart = null;
+                });
+
+            return pendingStart;
+        };
+
+        const handleResize = () => {
+            lastHalfWidth = null;
+            runAnimation();
+        };
+
+        const handleMouseEnter = () => {
+            if (!isAnimationActive) {
+                return;
+            }
+            marquee.classList.add('marquee--paused');
+        };
+
+        const handleMouseLeave = () => {
+            marquee.classList.remove('marquee--paused');
+        };
+
+        runAnimation();
+
+        if (typeof ResizeObserver !== 'undefined') {
+            const resizeObserver = new ResizeObserver(handleResize);
+            resizeObserver.observe(container);
+            cleanupTasks.push(() => resizeObserver.disconnect());
+        } else {
+            window.addEventListener('resize', handleResize);
+            cleanupTasks.push(() => window.removeEventListener('resize', handleResize));
+        }
+
+        container.addEventListener('mouseenter', handleMouseEnter);
+        cleanupTasks.push(() => container.removeEventListener('mouseenter', handleMouseEnter));
+
+        container.addEventListener('mouseleave', handleMouseLeave);
+        cleanupTasks.push(() => container.removeEventListener('mouseleave', handleMouseLeave));
+
+        if (reduceMotionQuery) {
+            const handleMotionChange = () => {
+                if (reduceMotionQuery.matches) {
+                    marquee.classList.remove('marquee--animated');
+                    marquee.classList.remove('marquee--paused');
+                    marquee.style.transform = '';
+                } else {
+                    lastHalfWidth = null;
+                    setupProjectsMarqueeMediaPreloader(marquee);
+                    runAnimation();
+                }
+            };
+
+            if (typeof reduceMotionQuery.addEventListener === 'function') {
+                reduceMotionQuery.addEventListener('change', handleMotionChange);
+                cleanupTasks.push(() => {
+                    if (typeof reduceMotionQuery.removeEventListener === 'function') {
+                        reduceMotionQuery.removeEventListener('change', handleMotionChange);
+                    }
+                });
+            } else if (typeof reduceMotionQuery.addListener === 'function') {
+                reduceMotionQuery.addListener(handleMotionChange);
+                cleanupTasks.push(() => {
+                    if (typeof reduceMotionQuery.removeListener === 'function') {
+                        reduceMotionQuery.removeListener(handleMotionChange);
+                    }
+                });
+            }
+        }
+    } catch (error) {
+        console.error('Projects marquee initialization failed:', error);
+        performCleanup();
+    }
 }
 
 function applyProjectsMarqueeStyles(halfWidth, durationMs) {
