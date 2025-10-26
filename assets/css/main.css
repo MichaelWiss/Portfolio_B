@@ -543,6 +543,7 @@ body {
     height: 20vh;
     display: flex;
     align-items: center;
+    gap: 20px;
     padding-left: 40px;
     cursor: pointer;
     position: relative;
@@ -554,14 +555,16 @@ body {
     padding-left: 60px;
 }
 
-.menu-item::before {
-    content: '▶';
-    font-size: 40px;
-    margin-right: 20px;
+.menu-arrow {
+    width: 36px;
+    height: 36px;
+    flex-shrink: 0;
     transition: transform 0.3s ease;
+    transform-origin: center;
+    display: block;
 }
 
-.menu-item.active::before {
+.menu-item.active .menu-arrow {
     transform: rotate(90deg);
 }
 
@@ -979,15 +982,16 @@ video {
         padding-left: 20px;
         height: auto;
         min-height: 120px;
+        gap: 15px;
     }
 
     .menu-item:hover {
         padding-left: 30px;
     }
 
-    .menu-item::before {
-        font-size: 30px;
-        margin-right: 15px;
+    .menu-arrow {
+        width: 28px;
+        height: 28px;
     }
 
     .detail-content {

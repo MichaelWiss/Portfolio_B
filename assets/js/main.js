@@ -988,6 +988,10 @@ function renderMenu(menuItems = []) {
             menuItem.style.backgroundColor = item.background;
         }
 
+        const arrowIcon = createArrowIcon();
+        arrowIcon.classList.add('menu-arrow');
+        menuItem.appendChild(arrowIcon);
+
         const titleSpan = document.createElement('span');
         titleSpan.textContent = item.title || '';
         menuItem.appendChild(titleSpan);
