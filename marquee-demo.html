@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Seamless Marquee Demo</title>
+  <style>
+    :root {
+      --hero-bg: #0f3b63;
+      --hero-text: #f5d9c7;
+      --footer-bg: #1a3a52;
+      --footer-text: #f5d9c7;
+      --hero-speed: 45s;
+      --footer-speed: 60s;
+      --hero-spacing: clamp(56px, 7vw, 112px);
+      --footer-spacing: clamp(48px, 6vw, 96px);
+    }
+
+    * {
+      margin: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: "Helvetica Neue", Arial, sans-serif;
+      background: #f7eee5;
+      color: #2E2520;
+      display: flex;
+      flex-direction: column;
+      gap: clamp(48px, 9vw, 96px);
+      padding: clamp(24px, 4vw, 48px);
+      min-height: 100vh;
+    }
+
+    h1 {
+      font-size: clamp(32px, 4vw, 56px);
+      font-weight: 700;
+      text-align: center;
+    }
+
+    .marquee-block {
+      width: 100vw;
+      margin-left: calc(50% - 50vw);
+      margin-right: calc(50% - 50vw);
+    }
+
+    .marquee {
+      --track-speed: var(--hero-speed);
+      --item-spacing: clamp(20px, 4vw, 48px);
+      overflow: hidden;
+      width: 100%;
+      user-select: none;
+      background: var(--bg, #333);
+      color: var(--fg, #fff);
+      padding: clamp(18px, 3vw, 28px) 0;
+    }
+
+    .marquee__track {
+      display: flex;
+      gap: 0;
+      width: max-content;
+      will-change: transform;
+      animation: scroll-forward var(--track-speed) linear infinite;
+    }
+
+    .marquee:hover .marquee__track {
+      animation-play-state: paused;
+    }
+
+    .marquee--reverse .marquee__track {
+      animation-name: scroll-reverse;
+    }
+
+    .marquee__group {
+      flex: 0 0 auto;
+      display: flex;
+      align-items: center;
+      gap: 0;
+    }
+
+    .marquee__item {
+      display: flex;
+      align-items: center;
+      font-size: clamp(36px, 7vw, 88px);
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      white-space: nowrap;
+      line-height: 1;
+      padding-inline: var(--item-spacing);
+    }
+
+    .marquee--hero {
+      background: var(--hero-bg);
+      --bg: var(--hero-bg);
+      --fg: var(--hero-text);
+      --track-speed: var(--hero-speed);
+      --item-spacing: var(--hero-spacing);
+    }
+
+    .marquee--hero .marquee__item {
+      color: var(--hero-text);
+    }
+
+    .marquee--footer {
+      background: var(--footer-bg);
+      --bg: var(--footer-bg);
+      --fg: var(--footer-text);
+      --track-speed: var(--footer-speed);
+      --item-spacing: var(--footer-spacing);
+    }
+
+    .marquee--footer .marquee__item {
+      color: var(--footer-text);
+    }
+
+    @keyframes scroll-forward {
+      from { transform: translate3d(0, 0, 0); }
+      to   { transform: translate3d(calc(var(--loop-distance, 0px) * -1), 0, 0); }
+    }
+
+    @keyframes scroll-reverse {
+      from { transform: translate3d(calc(var(--loop-distance, 0px) * -1), 0, 0); }
+      to   { transform: translate3d(0, 0, 0); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .marquee__track { animation-play-state: paused !important; }
+    }
+  </style>
+</head>
+<body>
+  <h1>Smooth Infinite Marquee Demo</h1>
+
+  <section class="marquee-block">
+    <div class="marquee marquee--hero" aria-hidden="true">
+      <div class="marquee__track" data-marquee-track>
+        <div class="marquee__group" data-marquee-group>
+          <span class="marquee__item">Michael Wiss</span>
+          <span class="marquee__item">Creative Director</span>
+          <span class="marquee__item">Design Lead</span>
+          <span class="marquee__item">Art Direction</span>
+        </div>
+        <div class="marquee__group" aria-hidden="true">
+          <span class="marquee__item">Michael Wiss</span>
+          <span class="marquee__item">Creative Director</span>
+          <span class="marquee__item">Design Lead</span>
+          <span class="marquee__item">Art Direction</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="marquee-block">
+    <div class="marquee marquee--footer marquee--reverse" aria-hidden="true">
+      <div class="marquee__track" data-marquee-track>
+        <div class="marquee__group" data-marquee-group>
+          <span class="marquee__item">THANK YOU</span>
+          <span class="marquee__item">THANK YOU</span>
+          <span class="marquee__item">THANK YOU</span>
+          <span class="marquee__item">THANK YOU</span>
+        </div>
+        <div class="marquee__group" aria-hidden="true">
+          <span class="marquee__item">THANK YOU</span>
+          <span class="marquee__item">THANK YOU</span>
+          <span class="marquee__item">THANK YOU</span>
+          <span class="marquee__item">THANK YOU</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    (() => {
+      const tracks = Array.from(document.querySelectorAll('[data-marquee-track]'));
+
+      if (!tracks.length) {
+        return;
+      }
+
+      const observers = [];
+
+      const setLoopDistance = (track) => {
+        const group = track.querySelector('[data-marquee-group]');
+        if (!group) {
+          return;
+        }
+
+        const width = group.offsetWidth;
+        track.style.setProperty('--loop-distance', `${width}px`);
+      };
+
+      const handleResize = () => {
+        tracks.forEach(setLoopDistance);
+      };
+
+      tracks.forEach((track) => {
+        setLoopDistance(track);
+
+        const group = track.querySelector('[data-marquee-group]');
+        if (!group) {
+          return;
+        }
+
+        const observer = new ResizeObserver(() => setLoopDistance(track));
+        observer.observe(group);
+        observers.push(observer);
+      });
+
+      window.addEventListener('resize', handleResize);
+      window.addEventListener('beforeunload', () => {
+        window.removeEventListener('resize', handleResize);
+        observers.forEach((observer) => observer.disconnect());
+      });
+    })();
+  </script>
+</body>
+</html>

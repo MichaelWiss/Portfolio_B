@@ -12,6 +12,8 @@ const MAX_EAGER_PROJECT_VIDEOS = 1;
 const MAX_EAGER_POSTER_IMAGES = 6;
 const PROJECTS_MOBILE_MEDIA_QUERY = '(max-width: 768px)';
 const RESUME_DRAWER_PATH = 'assets/resume/resume.html';
+const SEAMLESS_MARQUEE_REVERSE_CLASS = 'seamless-marquee--reverse';
+const STATIC_MARQUEE_REGISTRY = new Map();
 let projectsMediaQuery = null;
 let isProjectsMobileView = false;
 let currentProjectsData = [];
@@ -368,16 +370,162 @@ function renderBlueMarquee(site) {
         return;
     }
 
+    marquee.classList.add('seamless-marquee');
+    teardownSeamlessMarquee(marquee);
     marquee.innerHTML = '';
 
     const label = (site.title || 'Michael Wiss').toUpperCase();
     const repeated = `${Array(8).fill(label).join(' • ')} • `;
 
-    for (let i = 0; i < 2; i += 1) {
-        const textBlock = document.createElement('div');
-        textBlock.className = 'blue-marquee-text';
+    const track = document.createElement('div');
+    track.className = 'seamless-marquee__track';
+    track.dataset.marqueeTrack = '';
+
+    const createGroup = (isClone = false) => {
+        const group = document.createElement('div');
+        group.className = 'seamless-marquee__group';
+        if (isClone) {
+            group.setAttribute('aria-hidden', 'true');
+        } else {
+            group.dataset.marqueeGroup = '';
+        }
+
+        const textBlock = document.createElement('span');
+        textBlock.className = 'blue-marquee-text seamless-marquee__item';
         textBlock.textContent = repeated;
-        marquee.appendChild(textBlock);
+        group.appendChild(textBlock);
+        return group;
+    };
+
+    track.appendChild(createGroup(false));
+    track.appendChild(createGroup(true));
+    marquee.appendChild(track);
+
+    setupSeamlessMarquee(marquee);
+}
+
+function setupSeamlessMarquee(container) {
+    if (!container) {
+        return;
+    }
+
+    const existing = STATIC_MARQUEE_REGISTRY.get(container);
+    if (existing && typeof existing.update === 'function') {
+        existing.update();
+        return;
+    }
+
+    const track = container.querySelector('[data-marquee-track]');
+    const group = track ? track.querySelector('[data-marquee-group]') : null;
+
+    if (!track || !group) {
+        return;
+    }
+
+    const animationName = container.classList.contains(SEAMLESS_MARQUEE_REVERSE_CLASS)
+        ? 'marquee-scroll-reverse'
+        : 'marquee-scroll-forward';
+    const animationValue = `${animationName} var(--marquee-speed, 45s) linear infinite`;
+    let rafId = null;
+    let lastDistance = null;
+    let isAnimationApplied = false;
+
+    const restartAnimation = () => {
+        track.style.animation = 'none';
+        // Force reflow so the browser applies the new distance immediately
+        void track.offsetWidth;
+        track.style.animation = animationValue;
+        isAnimationApplied = true;
+    };
+
+    const scheduleUpdate = () => {
+        if (rafId) {
+            cancelAnimationFrame(rafId);
+        }
+
+        rafId = requestAnimationFrame(() => {
+            const rect = group.getBoundingClientRect();
+            const width = rect.width || group.scrollWidth || 0;
+
+            if (!width) {
+                track.style.animation = 'none';
+                track.style.setProperty('--loop-distance', '0px');
+                lastDistance = null;
+                isAnimationApplied = false;
+                return;
+            }
+
+            const nextDistance = `${Math.ceil(width)}px`;
+
+            if (nextDistance !== lastDistance || !isAnimationApplied) {
+                track.style.setProperty('--loop-distance', nextDistance);
+                lastDistance = nextDistance;
+                restartAnimation();
+            }
+        });
+    };
+
+    const cleanups = [];
+
+    if (typeof ResizeObserver !== 'undefined') {
+        const resizeObserver = new ResizeObserver(() => scheduleUpdate());
+        resizeObserver.observe(group);
+        cleanups.push(() => resizeObserver.disconnect());
+    }
+
+    const handleWindowResize = () => scheduleUpdate();
+    window.addEventListener('resize', handleWindowResize);
+    cleanups.push(() => window.removeEventListener('resize', handleWindowResize));
+
+    if (document.fonts) {
+        if (typeof document.fonts.addEventListener === 'function') {
+            const handleFontLoading = () => scheduleUpdate();
+            document.fonts.addEventListener('loadingdone', handleFontLoading);
+            cleanups.push(() => {
+                if (typeof document.fonts.removeEventListener === 'function') {
+                    document.fonts.removeEventListener('loadingdone', handleFontLoading);
+                }
+            });
+        } else if (document.fonts.ready && typeof document.fonts.ready.then === 'function') {
+            document.fonts.ready.then(() => scheduleUpdate()).catch(() => {});
+        }
+    }
+
+    cleanups.push(() => {
+        if (rafId) {
+            cancelAnimationFrame(rafId);
+            rafId = null;
+        }
+    });
+
+    const cleanup = () => {
+        cleanups.forEach(fn => {
+            try {
+                fn();
+            } catch (error) {
+                console.warn('Marquee cleanup encountered an issue:', error);
+            }
+        });
+        track.style.animation = 'none';
+        track.style.removeProperty('--loop-distance');
+        lastDistance = null;
+        isAnimationApplied = false;
+    };
+
+    STATIC_MARQUEE_REGISTRY.set(container, { cleanup, update: scheduleUpdate });
+    scheduleUpdate();
+}
+
+function teardownSeamlessMarquee(container) {
+    const entry = STATIC_MARQUEE_REGISTRY.get(container);
+    if (!entry) {
+        return;
+    }
+
+    try {
+        entry.cleanup();
+    } finally {
+        STATIC_MARQUEE_REGISTRY.delete(container);
     }
 }
 
@@ -1868,43 +2016,10 @@ function teardownProjectsMarqueeAnimation(marquee) {
 }
 
 function initMarqueeAnimations() {
-    const THANK_YOU_DURATION = 78000;
     const PROJECTS_DURATION = 120000;
-    let nameMarqueeInstance = null;
 
-    const startNameMarquee = speed => {
-        if (nameMarqueeInstance && typeof nameMarqueeInstance.destroy === 'function') {
-            nameMarqueeInstance.destroy();
-        }
-
-        const config = {
-            marqueeId: 'nameMarquee',
-            direction: 'left',
-            pauseOnHover: false,
-        };
-
-        if (speed && speed > 0) {
-            config.pixelsPerSecond = speed;
-        } else {
-            config.duration = THANK_YOU_DURATION;
-        }
-
-        nameMarqueeInstance = initSeamlessMarquee(config);
-    };
-
-    const thankYouMarqueeInstance = initSeamlessMarquee({
-        marqueeId: 'thankYouMarquee',
-        duration: THANK_YOU_DURATION,
-        direction: 'left',
-        pauseOnHover: false,
-        onReady: ({ speed }) => {
-            startNameMarquee(speed);
-        },
-    });
-
-    if (!thankYouMarqueeInstance) {
-        startNameMarquee();
-    }
+    setupSeamlessMarquee(document.getElementById('nameMarquee'));
+    setupSeamlessMarquee(document.getElementById('thankYouMarquee'));
 
     if (!isProjectsMobileView) {
         initProjectsMarqueeAnimation({ duration: PROJECTS_DURATION });

@@ -237,19 +237,51 @@ body {
     border-bottom: var(--border-width) solid var(--color-primary);
 }
 
-.blue-marquee {
+.seamless-marquee {
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+}
+
+.seamless-marquee__track {
     display: flex;
-    white-space: nowrap;
+    gap: 0;
+    width: max-content;
     will-change: transform;
+}
+
+.seamless-marquee:hover .seamless-marquee__track {
+    animation-play-state: paused;
+}
+
+.seamless-marquee--reverse .seamless-marquee__track {
     transform: translate3d(0, 0, 0);
 }
 
-.blue-marquee-text {
+.seamless-marquee__group {
+    display: flex;
+    gap: 0;
+}
+
+.seamless-marquee__item {
+    display: inline-flex;
+    align-items: center;
+    flex-shrink: 0;
+    white-space: nowrap;
+    line-height: 1;
+}
+
+.blue-marquee {
+    --marquee-speed: 105s;
+    --marquee-spacing: clamp(40px, 6vw, 80px);
+}
+
+.blue-marquee .blue-marquee-text {
     color: #E8CEBA;
     font-size: clamp(50px, 8vw, 100px);
     font-weight: 900;
     letter-spacing: 0.1em;
-    padding: 0 50px;
+    padding: 0 var(--marquee-spacing);
 }
 
 .marquee-container {
@@ -261,7 +293,6 @@ body {
 
 .marquee {
     will-change: transform;
-    /* GPU compositing for smooth animation */
     transform: translate3d(0, 0, 0);
     backface-visibility: hidden;
 }
@@ -270,6 +301,37 @@ body {
     display: flex;
     gap: 24px;
 }
+
+@keyframes marquee-scroll-forward {
+    from {
+        transform: translate3d(0, 0, 0);
+    }
+    to {
+        transform: translate3d(calc(var(--loop-distance, 0px) * -1), 0, 0);
+    }
+}
+
+@keyframes marquee-scroll-reverse {
+    from {
+        transform: translate3d(calc(var(--loop-distance, 0px) * -1), 0, 0);
+    }
+    to {
+        transform: translate3d(0, 0, 0);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .seamless-marquee__track {
+        animation-play-state: paused !important;
+        transform: translate3d(0, 0, 0) !important;
+    }
+}
+
+
+/* 
+ * Marquee animation handled by JavaScript for seamless infinite scroll
+ * JS repositions the marquee mid-animation to eliminate visible jump
+ */
 
 /* 
  * Marquee animation handled by JavaScript for seamless infinite scroll
@@ -666,18 +728,16 @@ body {
 }
 
 .thank-you-marquee {
-    display: flex;
-    white-space: nowrap;
-    will-change: transform;
-    transform: translate3d(0, 0, 0);
+    --marquee-speed: 140s;
+    --marquee-spacing: clamp(40px, 6vw, 80px);
 }
 
-.thank-you-marquee-text {
+.thank-you-marquee .thank-you-marquee-text {
     color: #E8CEBA;
     font-size: clamp(50px, 8vw, 100px);
     font-weight: 900;
     letter-spacing: 0.1em;
-    padding: 0 50px;
+    padding: 0 var(--marquee-spacing);
 }
 
 .modal {
@@ -830,10 +890,6 @@ video {
     .marquee {
         animation: none;
         transform: translateX(0);
-    }
-    
-    .blue-marquee {
-        animation: none;
     }
 }
 
