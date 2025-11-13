@@ -1,7 +1,7 @@
 {
   "site": {
     "title": "Michael Wiss",
-    "heroText": "Michael Wiss is a creative developer who makes everything Magical. I make work across all mediums and platforms: branding, digital, motion, illustration, environmental, print, packaging & more.",
+    "heroText": "Michael Wiss is a creative web developer who makes everything Magical. I make work using web technologies like Next.js, Shopify  & more.",
     "heroSparkleWords": [
       "MAGICAL"
     ]
@@ -32,7 +32,7 @@
       "previewMedia": "assets/media/videos/printedPoster.webm",
       "previewPoster": "assets/media/posters/printedPoster.jpg",
       "image": "assets/media/videos/printedPoster.gif",
-      "video": "assets/media/videos/printedPoster.mov",
+      "video": "assets/media/videos/printedPoster.webm",
       "alt": "Printed Poster project showcase - Shopify e-commerce application"
     },
     {
@@ -43,7 +43,7 @@
       "previewMedia": "assets/media/videos/runnersRotation.webm",
       "previewPoster": "assets/media/posters/runnersRotation.jpg",
       "image": "assets/media/videos/runnersRotation.gif",
-      "video": "assets/media/videos/runnersRotation.mov",
+      "video": "assets/media/videos/runnersRotation.webm",
       "alt": "Runners Rotation project showcase - Shopify e-commerce application"
     },
     {
@@ -54,8 +54,19 @@
       "previewMedia": "assets/media/videos/chefPortfolio.webm",
       "previewPoster": "assets/media/posters/chefPortfolio.jpg",
       "image": "assets/media/videos/chefPortfolio.gif",
-      "video": null,
+      "video": "assets/media/videos/chefPortfolio.webm",
       "alt": "Chef Portfolio project showcase - Strapi CMS application"
+    },
+    {
+      "id": "refinements",
+      "modalType": "refinements",
+      "label": "Shopify, Liquid",
+      "title": "Refinements Home Goods",
+      "previewMedia": "assets/media/videos/refinements1.webm",
+      "previewPoster": "assets/media/posters/refinements1.jpg",
+      "image": "assets/media/videos/refinements1.gif",
+      "video": "assets/media/videos/refinements1.webm",
+      "alt": "Refinements project showcase - Shopify e-commerce application, Custom Liquid theme development"
     },
     {
       "id": "artisanal-market",
@@ -65,8 +76,19 @@
       "previewMedia": "assets/media/videos/neoBauhaus.webm",
       "previewPoster": "assets/media/posters/neoBauhaus.jpg",
       "image": "assets/media/videos/neoBauhaus.gif",
-      "video": null,
+      "video": "assets/media/videos/neoBauhaus.webm",
       "alt": "Artisanal Market project showcase - Shopify e-commerce application"
+    },
+     {
+      "id": "organic grocers",
+      "modalType": "organicGrocers",
+      "label": "PAYLOAD CMS, NEXT.js, STRIPE",
+      "title": "Organic Grocers",
+      "previewMedia": "assets/media/videos/outrageousPayload.webm",
+      "previewPoster": "assets/media/posters/outrageousPayload.jpg",
+      "image": "assets/media/videos/outrageousPayload.gif",
+      "video": "assets/media/videos/outrageousPayload.webm",
+      "alt": "full-stack headless e-commerce platform integrating Payload CMS (v3) for backend, Next.js 16 frontend, and Stripe payments—using PostgreSQL + TypeScript."
     },
     {
       "id": "hummingbird-pantry",
@@ -76,7 +98,7 @@
       "previewMedia": "assets/media/videos/hummingbirdPantry.webm",
       "previewPoster": "assets/media/posters/hummingbirdPantry.jpg",
       "image": "assets/media/videos/hummingbirdPantry.gif",
-      "video": null,
+      "video": "assets/media/videos/hummingbirdPantry.webm",
       "alt": "Hummingbird Pantry project showcase - progressive web app experience"
     },
     {
@@ -87,7 +109,7 @@
       "previewMedia": "assets/media/videos/bazaar.webm",
       "previewPoster": "assets/media/posters/bazaar.jpg",
       "image": "assets/media/videos/bazaar.gif",
-      "video": null,
+      "video": "assets/media/videos/bazaar.webm",
       "alt": "Bazaar project showcase - Shopify application"
     }
   ],
