@@ -77,3 +77,5 @@ Open `index.html` in a browser (or deploy via Vercel for a production-ready prev
 3. Subsequent deploys can use `vercel --prod` to publish production builds.
 
 The included `vercel.json` enables clean URLs and keeps older `/demo1` links working by redirecting them to `/`. All assets are served statically, so no build step is required.
+
+new gif
