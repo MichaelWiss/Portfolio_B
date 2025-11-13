@@ -60,8 +60,8 @@
     {
       "id": "refinements",
       "modalType": "refinements",
-      "label": "Shopify, Liquid",
-      "title": "Refinements Home Goods",
+      "label": "Shopify, Custom Liquid Theme",
+      "title": "Refinements Home",
       "previewMedia": "assets/media/videos/refinements1.webm",
       "previewPoster": "assets/media/posters/refinements1.jpg",
       "image": "assets/media/videos/refinements1.gif",
