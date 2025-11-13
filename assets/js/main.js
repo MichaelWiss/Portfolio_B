@@ -38,6 +38,7 @@ let resumeDrawerStatusElement = null;
 let resumeDrawerShadowHost = null;
 let resumeDrawerShadowRoot = null;
 let resumeDrawerExternalStylesLoaded = false;
+let resumeDrawerDocumentHTML = '';
 
 let videoLookup = {};
 let currentVideo = null;
@@ -1764,6 +1765,7 @@ async function loadResumeDrawerContent() {
         }
 
         const text = await response.text();
+        resumeDrawerDocumentHTML = text;
         const parser = new DOMParser();
         const doc = parser.parseFromString(text, 'text/html');
 
@@ -1811,6 +1813,7 @@ async function loadResumeDrawerContent() {
             resumeDrawerPanelElement.scrollTop = 0;
         }
 
+        setupResumeDownloadButton();
         resumeDrawerContentLoaded = true;
     })().catch(error => {
         console.error('Failed to load resume drawer content:', error);
@@ -1826,6 +1829,98 @@ async function loadResumeDrawerContent() {
     });
 
     return resumeDrawerLoadingPromise;
+}
+
+function setupResumeDownloadButton() {
+    if (!resumeDrawerShadowRoot) {
+        return;
+    }
+
+    const downloadButton = resumeDrawerShadowRoot.querySelector('.download-btn');
+    if (!downloadButton || downloadButton.__resumeDownloadAttached) {
+        return;
+    }
+
+    downloadButton.removeAttribute('onclick');
+
+    downloadButton.addEventListener('click', event => {
+        event.preventDefault();
+        event.stopPropagation();
+        initiateResumePdfDownload();
+    });
+
+    downloadButton.__resumeDownloadAttached = true;
+}
+
+function initiateResumePdfDownload() {
+    if (!resumeDrawerDocumentHTML) {
+        window.print();
+        return;
+    }
+
+    const iframe = document.createElement('iframe');
+    iframe.title = 'Resume PDF preview';
+    iframe.setAttribute('aria-hidden', 'true');
+    Object.assign(iframe.style, {
+        position: 'fixed',
+        width: '0',
+        height: '0',
+        border: '0',
+        top: '0',
+        left: '0',
+        visibility: 'hidden',
+    });
+
+    document.body.appendChild(iframe);
+
+    const frameWindow = iframe.contentWindow;
+    if (!frameWindow || !frameWindow.document) {
+        document.body.removeChild(iframe);
+        window.print();
+        return;
+    }
+
+    let printTriggered = false;
+    const cleanup = () => {
+        setTimeout(() => {
+            if (iframe.parentNode) {
+                iframe.parentNode.removeChild(iframe);
+            }
+        }, 300);
+    };
+
+    const triggerPrint = () => {
+        if (printTriggered) {
+            return;
+        }
+        printTriggered = true;
+        try {
+            frameWindow.focus();
+            frameWindow.print();
+        } catch (error) {
+            console.error('Unable to print resume document:', error);
+            window.print();
+        } finally {
+            cleanup();
+        }
+    };
+
+    iframe.addEventListener('load', triggerPrint, { once: true });
+
+    try {
+        frameWindow.document.open();
+        frameWindow.document.write(resumeDrawerDocumentHTML);
+        frameWindow.document.close();
+    } catch (error) {
+        console.error('Unable to prime resume print frame:', error);
+        cleanup();
+        window.print();
+        return;
+    }
+
+    if (frameWindow.document.readyState === 'complete') {
+        triggerPrint();
+    }
 }
 
 async function openResumeDrawer(triggerElement) {

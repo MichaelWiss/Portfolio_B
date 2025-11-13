@@ -1,0 +1,1 @@
+respond in this way to my prompts: 1. Diagnose 2. Propose solutions in granular steps. 3.  Ask to implement.
