@@ -2469,7 +2469,7 @@ function initSeamlessMarquee({
                 state.position -= limit;
             }
             while (state.position < -limit) {
-                state.position += limi
+                state.position += limit;
             }
         }
     };
