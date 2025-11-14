@@ -3,10 +3,10 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "postinstall": "esbuild --version",
-    "build": "rm -rf dist && mkdir -p dist && cp -R assets dist && cp index.html dist && esbuild assets/js/main.js assets/js/modules/constants.js assets/js/modules/state.js assets/js/modules/domUtils.js assets/js/modules/ContentLoader.js assets/js/modules/ContentRenderer.js assets/js/modules/HeroRenderer.js assets/js/modules/ProjectsRenderer.js assets/js/modules/UIRenderer.js assets/js/modules/VideoPreloader.js assets/js/modules/ModalManager.js assets/js/modules/ResumeDrawer.js assets/js/modules/MarqueeManager.js assets/js/modules/EventDelegator.js --format=iife --minify --target=es2017 --outdir=dist/assets/js && esbuild assets/css/main.css --loader:.css=css --minify --outfile=dist/assets/css/main.css"
+    "build": "node scripts/build.js"
   },
   "devDependencies": {
-    "esbuild": "^0.24.0"
+    "clean-css-cli": "^5.6.3",
+    "terser": "^5.36.0"
   }
 }
