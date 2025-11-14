@@ -9,5 +9,6 @@
             "destination": "/",
             "permanent": false
         }
-    ]
+    ],
+    "outputDirectory": "dist"
 }
