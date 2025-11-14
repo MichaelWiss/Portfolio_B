@@ -53,15 +53,37 @@ const HeroRenderer = (() => {
             return;
         }
 
+        // Clear any previous content/instances.
         DOMUtils.clearChildren(marquee);
 
         const label = (siteTitle || 'Michael Wiss').toUpperCase();
         const repeated = `${Array(8).fill(label).join(' • ')} • `;
 
-        for (let index = 0; index < 2; index += 1) {
-            const textBlock = DOMUtils.createElement('div', 'blue-marquee-text', { text: repeated });
-            DOMUtils.append(marquee, textBlock);
+        // Recreate the seamless marquee track + groups expected by the
+        // original animation helper.
+        const track = DOMUtils.createElement('div', 'seamless-marquee__track');
+        if (track.dataset) {
+            track.dataset.marqueeTrack = '';
         }
+
+        const createGroup = (isClone = false) => {
+            const group = DOMUtils.createElement('div', 'seamless-marquee__group');
+            if (isClone) {
+                DOMUtils.setAttribute(group, Constants.ARIA.hidden, 'true');
+            } else if (group.dataset) {
+                group.dataset.marqueeGroup = '';
+            }
+
+            const textBlock = DOMUtils.createElement('span', 'blue-marquee-text seamless-marquee__item', {
+                text: repeated,
+            });
+            DOMUtils.append(group, textBlock);
+            return group;
+        };
+
+        DOMUtils.append(track, createGroup(false));
+        DOMUtils.append(track, createGroup(true));
+        DOMUtils.append(marquee, track);
     };
 
     const createSparkleIcon = (animationDelay = '0s') => {

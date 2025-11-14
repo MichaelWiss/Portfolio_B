@@ -988,6 +988,11 @@ video {
         border: 1px solid rgba(46, 37, 32, 0.2);
         border-radius: 6px;
         padding: 16px;
+        cursor: default;
+    }
+
+    #projectsMarquee.projects-gallery .grate-card:hover {
+        transform: none;
     }
 
     #projectsMarquee.projects-gallery .grate-media,

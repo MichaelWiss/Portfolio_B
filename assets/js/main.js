@@ -45,48 +45,74 @@ let currentVideo = null;
 let currentModalResizeHandler = null;
 let currentModalElements = null;
 
+// Module instances (initialized on DOMContentLoaded)
+let modalManagerInstance = null;
+let resumeDrawerInstance = null;
+let videoPreloaderInstance = null;
+let marqueeManagerInstance = null;
+let eventDelegatorInstance = null;
+
 document.addEventListener('DOMContentLoaded', async () => {
+    // Initialize responsive projects viewport mode and sync with State.
     initProjectsViewportMode();
 
-    const inlineData = readInlineContentData();
-    if (inlineData) {
-        applyContent(inlineData);
-        initializeInteractiveComponents();
-    }
+    // Initialize module instances once the DOM is ready.
+    modalManagerInstance = new ModalManager();
+    resumeDrawerInstance = new ResumeDrawer();
+    videoPreloaderInstance = new VideoPreloader();
+    marqueeManagerInstance = new MarqueeManager({ preloader: videoPreloaderInstance });
+    eventDelegatorInstance = new EventDelegator({ modalManager: modalManagerInstance });
+
+    // Wire modal and resume drawer to DOM structure.
+    modalManagerInstance.init();
+    resumeDrawerInstance.init();
 
     try {
-        const data = await loadContentData();
+        const data = await ContentLoader.loadData();
 
-        if (!inlineData || !contentPayloadsMatch(inlineData, data)) {
-            applyContent(data);
-            initializeInteractiveComponents();
-        }
+        ContentRenderer.applyContent(data, {
+            preloader: videoPreloaderInstance,
+            marqueeManager: marqueeManagerInstance,
+        });
+
+        initializeInteractiveComponents(
+            modalManagerInstance,
+            resumeDrawerInstance,
+            eventDelegatorInstance,
+        );
     } catch (error) {
         console.error('App initialization error:', error);
-
-        if (!inlineData) {
-            displayContentError(error);
-        }
+        ContentRenderer.displayContentError(error);
     }
 });
 
-function initializeInteractiveComponents() {
-    initResumeDrawer();
+function initializeInteractiveComponents(modalManager, resumeDrawer, eventDelegator) {
+    const alreadyInitialized = (typeof State !== 'undefined' && State.marquee)
+        ? State.marquee.isInteractiveInitialized
+        : isInteractiveInitialized;
 
-    if (isInteractiveInitialized) {
-        setupProjectsMarqueeMediaPreloader(document.getElementById('projectsMarquee'));
-        return;
+    if (!alreadyInitialized) {
+        // Use EventDelegator for click/keyboard handling.
+        if (eventDelegator && typeof eventDelegator.init === 'function') {
+            eventDelegator.init();
+        }
+
+        // Navigation behavior (sticky nav + smooth scroll) remains in this file.
+        initNavigation(resumeDrawer);
+
+        // Hook resume drawer Escape key handling via the module when available.
+        if (resumeDrawer && !resumeDrawer.keydownHandler && typeof resumeDrawer.handleKeydown === 'function') {
+            resumeDrawer.keydownHandler = event => resumeDrawer.handleKeydown(event);
+            document.addEventListener('keydown', resumeDrawer.keydownHandler);
+        }
     }
 
-    initEventDelegation();
-    initNavigation();
-    initAccordion();
+    // Marquee animations are handled via MarqueeManager inside ContentRenderer
+    // and by viewport change hooks.
 
-    requestAnimationFrame(() => {
-        initMenu();
-        initMarqueeAnimations();
-    });
-
+    if (typeof State !== 'undefined' && State.marquee) {
+        State.marquee.isInteractiveInitialized = true;
+    }
     isInteractiveInitialized = true;
 }
 
@@ -251,52 +277,97 @@ function getMaxEagerProjectVideos() {
 function initProjectsViewportMode() {
     if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') {
         isProjectsMobileView = false;
+        if (typeof State !== 'undefined' && State.projects) {
+            State.projects.isMobileView = false;
+        }
         return;
     }
 
-    if (projectsMediaQuery && projectsViewportChangeHandler) {
+    if ((projectsMediaQuery && projectsViewportChangeHandler)
+        || (typeof State !== 'undefined'
+            && State.projects
+            && State.projects.mediaQuery
+            && State.projects.viewportChangeHandler)) {
         return;
     }
 
-    projectsMediaQuery = window.matchMedia(PROJECTS_MOBILE_MEDIA_QUERY);
-    isProjectsMobileView = projectsMediaQuery.matches;
+    const mediaQuery = window.matchMedia(PROJECTS_MOBILE_MEDIA_QUERY);
+    const matches = mediaQuery.matches;
 
-    projectsViewportChangeHandler = event => {
+    projectsMediaQuery = mediaQuery;
+    isProjectsMobileView = matches;
+
+    if (typeof State !== 'undefined' && State.projects) {
+        State.projects.mediaQuery = mediaQuery;
+        State.projects.isMobileView = matches;
+    }
+
+    const handler = event => {
         if (!event) {
             return;
         }
         handleProjectsViewportChange(event.matches);
     };
 
-    if (typeof projectsMediaQuery.addEventListener === 'function') {
-        projectsMediaQuery.addEventListener('change', projectsViewportChangeHandler);
-    } else if (typeof projectsMediaQuery.addListener === 'function') {
-        projectsMediaQuery.addListener(projectsViewportChangeHandler);
+    projectsViewportChangeHandler = handler;
+    if (typeof State !== 'undefined' && State.projects) {
+        State.projects.viewportChangeHandler = handler;
+    }
+
+    if (typeof mediaQuery.addEventListener === 'function') {
+        mediaQuery.addEventListener('change', handler);
+    } else if (typeof mediaQuery.addListener === 'function') {
+        mediaQuery.addListener(handler);
     }
 }
 
 function handleProjectsViewportChange(nextIsMobile) {
     if (typeof nextIsMobile !== 'boolean') {
-        nextIsMobile = projectsMediaQuery ? projectsMediaQuery.matches : false;
+        const mq = (typeof State !== 'undefined' && State.projects && State.projects.mediaQuery)
+            || projectsMediaQuery;
+        nextIsMobile = mq ? mq.matches : false;
     }
 
-    if (nextIsMobile === isProjectsMobileView) {
+    const previous = (typeof State !== 'undefined' && State.projects)
+        ? State.projects.isMobileView
+        : isProjectsMobileView;
+
+    if (nextIsMobile === previous) {
         return;
     }
 
     isProjectsMobileView = nextIsMobile;
+    if (typeof State !== 'undefined' && State.projects) {
+        State.projects.isMobileView = nextIsMobile;
+    }
 
     const marquee = document.getElementById('projectsMarquee');
     if (!marquee) {
         return;
     }
 
-    renderProjects(currentProjectsData);
+    const projects = (typeof State !== 'undefined'
+        && State.projects
+        && Array.isArray(State.projects.currentData))
+        ? State.projects.currentData
+        : (currentProjectsData || []);
 
-    if (isProjectsMobileView) {
-        teardownProjectsMarqueeAnimation(marquee);
-    } else {
-        initProjectsMarqueeAnimation();
+    // Re-render projects via ProjectsRenderer.
+    if (typeof ProjectsRenderer !== 'undefined'
+        && ProjectsRenderer
+        && typeof ProjectsRenderer.render === 'function') {
+        ProjectsRenderer.render(projects, {
+            preloader: videoPreloaderInstance || null,
+            teardownMarquee: marqueeManagerInstance
+                && typeof marqueeManagerInstance.teardownProjectsMarquee === 'function'
+                ? marqueeManagerInstance.teardownProjectsMarquee.bind(marqueeManagerInstance)
+                : undefined,
+        });
+    }
+
+    // Refresh marquee animation using MarqueeManager.
+    if (marqueeManagerInstance && typeof marqueeManagerInstance.refreshProjectsMarquee === 'function') {
+        marqueeManagerInstance.refreshProjectsMarquee();
     }
 }
 
@@ -626,350 +697,6 @@ function createSparkleIcon(animationDelay = '0s') {
     return svg;
 }
 
-function renderProjects(projects = []) {
-    const marquee = document.getElementById('projectsMarquee');
-    const projectList = Array.isArray(projects) ? projects : [];
-
-    currentProjectsData = projectList.slice();
-
-    if (!marquee) {
-        return;
-    }
-
-    teardownProjectsMarqueeAnimation(marquee);
-
-    const container = marquee.parentElement;
-    if (container && container.classList) {
-        container.classList.toggle('marquee-container--gallery', isProjectsMobileView);
-    }
-
-    marquee.classList.toggle('projects-gallery', isProjectsMobileView);
-    marquee.classList.toggle('marquee--desktop', !isProjectsMobileView);
-    marquee.classList.remove('marquee--animated');
-    marquee.classList.remove('marquee--paused');
-    marquee.style.transform = '';
-
-    delete marquee.dataset.mediaPreloaderInitialized;
-    marquee.innerHTML = '';
-    preloadProjectPosters(projectList);
-
-    forceProjectVideoPreviews = isProjectsMobileView && canPlayProjectWebM();
-
-    if (!projectList.length) {
-        const placeholder = document.createElement('div');
-        placeholder.className = 'grate-card';
-        placeholder.innerHTML = '<div class="grate-title">Projects coming soon</div>';
-        marquee.appendChild(placeholder);
-        forceProjectVideoPreviews = false;
-        return;
-    }
-
-    projectPosterRenderCount = 0;
-
-    const itemsToRender = isProjectsMobileView
-        ? projectList
-        : projectList.concat(projectList);
-
-    itemsToRender.forEach(project => {
-        marquee.appendChild(createProjectCard(project));
-    });
-
-    forceProjectVideoPreviews = false;
-
-    setupProjectsMarqueeMediaPreloader(marquee);
-}
-
-function preloadProjectPosters(projects = [], limit = 6) {
-    if (!projects.length) {
-        return;
-    }
-
-    const head = document.head || document.querySelector('head');
-    if (!head) {
-        return;
-    }
-
-    let count = 0;
-
-    projects.some(project => {
-        const poster = project && project.previewPoster;
-        if (!poster || preloadedPosterSet.has(poster)) {
-            return false;
-        }
-
-        const link = document.createElement('link');
-        link.rel = 'preload';
-        link.as = 'image';
-        link.href = poster;
-        link.fetchPriority = 'high';
-        link.setAttribute('fetchpriority', 'high');
-
-        head.appendChild(link);
-        preloadedPosterSet.add(poster);
-        count += 1;
-
-        return count >= limit;
-    });
-}
-
-function createProjectCard(project) {
-    const card = document.createElement('div');
-    card.className = 'grate-card';
-
-    const modalKey = project.modalType || project.id;
-    if (modalKey) {
-        card.dataset.modalType = modalKey;
-    }
-    if (project.title) {
-        card.dataset.modalTitle = project.title;
-    }
-
-    const label = document.createElement('div');
-    label.className = 'grate-label';
-    label.textContent = project.label || '';
-
-    const title = document.createElement('div');
-    title.className = 'grate-title';
-    title.textContent = project.title || 'Untitled';
-
-    title.appendChild(document.createTextNode(' '));
-
-    title.appendChild(createArrowIcon());
-
-    card.appendChild(label);
-    card.appendChild(title);
-    card.appendChild(createProjectPreviewMedia(project));
-
-    return card;
-}
-
-function createArrowIcon() {
-    const svg = document.createElementNS(SVG_NS, 'svg');
-    svg.classList.add('arrow-icon');
-    svg.setAttribute('viewBox', '0 0 16 16');
-    svg.setAttribute('width', '24');
-    svg.setAttribute('height', '24');
-    svg.setAttribute('aria-hidden', 'true');
-    svg.setAttribute('focusable', 'false');
-
-    const path = document.createElementNS(SVG_NS, 'path');
-    path.setAttribute('d', 'M4 12 L12 4 M7 4 H12 V9');
-    path.setAttribute('fill', 'none');
-    path.setAttribute('stroke', 'currentColor');
-    path.setAttribute('stroke-width', '1.5');
-    path.setAttribute('stroke-linecap', 'round');
-    path.setAttribute('stroke-linejoin', 'round');
-
-    svg.appendChild(path);
-
-    return svg;
-}
-
-function createProjectPreviewMedia(project) {
-    const previewSrc = project.previewMedia || project.image || '';
-    const altText = project.alt || project.title || 'Project preview';
-
-    if (!previewSrc) {
-        return createProjectPreviewPlaceholder(altText);
-    }
-
-    const isVideoAsset = VIDEO_PREVIEW_PATTERN.test(previewSrc);
-    const useVideo = isVideoAsset && (forceProjectVideoPreviews || shouldUseVideoPreviews());
-
-    if (useVideo) {
-        const video = document.createElement('video');
-        video.className = 'grate-media';
-        video.autoplay = true;
-        video.loop = true;
-        video.muted = true;
-        video.playsInline = true;
-        video.preload = 'none';
-        video.setAttribute('preload', 'none');
-        video.setAttribute('muted', '');
-        video.setAttribute('playsinline', '');
-        video.setAttribute('webkit-playsinline', '');
-        video.setAttribute('loading', 'lazy');
-        video.dataset.previewSrc = previewSrc;
-        video.dataset.previewType = getVideoMimeType(previewSrc);
-        video.dataset.deferLoad = 'true';
-        video.disablePictureInPicture = true;
-        video.disableRemotePlayback = true;
-        video.setAttribute('role', 'img');
-        video.setAttribute('aria-label', altText);
-
-        const posterSrc = project.previewPoster || (project.image && !VIDEO_PREVIEW_PATTERN.test(project.image) ? project.image : '');
-        if (posterSrc) {
-            video.poster = posterSrc;
-            video.dataset.posterSrc = posterSrc;
-        }
-
-        return video;
-    }
-
-    const imageSrc = project.previewPoster || project.image;
-    if (imageSrc) {
-        const eager = projectPosterRenderCount < MAX_EAGER_POSTER_IMAGES;
-        projectPosterRenderCount += 1;
-        return createProjectPreviewImage(imageSrc, altText, eager);
-    }
-
-    return createProjectPreviewPlaceholder(altText);
-}
-
-function createProjectPreviewImage(src, altText, eager = false) {
-    const image = document.createElement('img');
-    image.className = 'grate-media';
-    image.src = src;
-    image.alt = altText;
-    image.decoding = 'async';
-    image.width = 360;
-    image.height = 480;
-
-    if (eager) {
-        image.loading = 'eager';
-        image.fetchPriority = 'high';
-    } else {
-        image.loading = 'lazy';
-        image.fetchPriority = 'low';
-    }
-
-    return image;
-}
-
-function createProjectPreviewPlaceholder(altText) {
-    const placeholder = document.createElement('div');
-    placeholder.className = 'grate-media grate-media--placeholder';
-    placeholder.textContent = altText;
-    return placeholder;
-}
-
-function getVideoMimeType(src) {
-    if (src.endsWith('.webm')) {
-        return 'video/webm';
-    }
-
-    if (src.endsWith('.ogv')) {
-        return 'video/ogg';
-    }
-
-    return 'video/mp4';
-}
-
-function setupProjectsMarqueeMediaPreloader(marquee) {
-    if (!marquee || typeof window === 'undefined') {
-        return;
-    }
-
-    if (marquee.dataset.mediaPreloaderInitialized === 'true') {
-        return;
-    }
-
-    const videos = Array.from(marquee.querySelectorAll('video[data-preview-src]'));
-
-    if (!videos.length) {
-        marquee.dataset.mediaPreloaderInitialized = 'true';
-        return;
-    }
-
-    marquee.dataset.mediaPreloaderInitialized = 'true';
-
-    const loadVideo = video => {
-        if (!video || video.dataset.previewLoaded === 'true') {
-            return;
-        }
-
-        const src = video.dataset.previewSrc;
-
-        if (!src) {
-            return;
-        }
-
-        let source = video.querySelector('source');
-
-        if (!source) {
-            source = document.createElement('source');
-            video.appendChild(source);
-        }
-
-        if (source.src !== src) {
-            source.src = src;
-        }
-
-        const type = video.dataset.previewType;
-        if (type) {
-            source.type = type;
-        }
-
-        if (video.dataset.posterSrc && !video.poster) {
-            video.poster = video.dataset.posterSrc;
-        }
-
-        delete video.dataset.deferLoad;
-        video.dataset.previewLoaded = 'true';
-
-        video.load();
-        const playPromise = video.play();
-        if (playPromise && typeof playPromise.then === 'function') {
-            playPromise.catch(() => {});
-        }
-    };
-
-    const eagerCount = Math.max(getMaxEagerProjectVideos(), 0);
-    const eagerVideos = videos.slice(0, eagerCount);
-    eagerVideos.forEach(loadVideo);
-
-    const remainingVideos = videos.slice(eagerCount);
-
-    if (!remainingVideos.length) {
-        return;
-    }
-
-    if (!('IntersectionObserver' in window)) {
-        remainingVideos.forEach(loadVideo);
-        return;
-    }
-
-    const observerOptions = isProjectsMobileView
-        ? {
-            root: null,
-            rootMargin: '200px 0px',
-            threshold: 0.1,
-        }
-        : {
-            root: marquee.parentElement,
-            rootMargin: '64px',
-            threshold: 0.2,
-        };
-
-    const observer = new IntersectionObserver(entries => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                loadVideo(entry.target);
-                observer.unobserve(entry.target);
-            }
-        });
-    }, observerOptions);
-
-    remainingVideos.forEach(video => observer.observe(video));
-
-    const warmUpAllVideos = () => {
-        videos.forEach(video => {
-            loadVideo(video);
-            if ('unobserve' in observer) {
-                observer.unobserve(video);
-            }
-        });
-    };
-
-    marquee.addEventListener('mouseenter', warmUpAllVideos, { once: true });
-    marquee.addEventListener('touchstart', warmUpAllVideos, { once: true });
-    marquee.addEventListener('focusin', event => {
-        const target = event.target;
-        if (target && target.tagName && target.tagName.toLowerCase() === 'video') {
-            loadVideo(target);
-        }
-    });
-}
 
 function shouldUseVideoPreviews() {
     if (typeof window === 'undefined') {
@@ -1321,201 +1048,8 @@ function sizeModalToVideo(video, elements) {
     }
 }
 
-function openModal(title, type) {
-    try {
-        const modal = document.getElementById('modal');
-        const modalTitle = document.getElementById('modalTitle');
-        const videoContainer = document.getElementById('videoContainer');
-        const modalContent = modal ? modal.querySelector('.modal-content') : null;
-        const modalBody = modal ? modal.querySelector('.modal-body') : null;
-        const modalHeader = modal ? modal.querySelector('.modal-header') : null;
 
-        if (!modal || !modalTitle || !videoContainer || !modalContent || !modalBody) {
-            console.error('Modal elements not found');
-            return;
-        }
-
-        if (currentModalResizeHandler) {
-            window.removeEventListener('resize', currentModalResizeHandler);
-            currentModalResizeHandler = null;
-        }
-
-        resetModalSizing(currentModalElements);
-
-        currentModalElements = {
-            modalContent,
-            modalBody,
-            modalHeader,
-            videoContainer,
-        };
-
-        modalTitle.textContent = title || 'Project';
-
-        const videoPath = videoLookup[type];
-
-        videoContainer.innerHTML = '';
-
-        if (!videoPath) {
-            const placeholder = document.createElement('div');
-            placeholder.className = 'video-placeholder';
-            placeholder.textContent = 'Project video coming soon.';
-            videoContainer.appendChild(placeholder);
-            currentVideo = null;
-            currentModalResizeHandler = null;
-        } else {
-            const video = document.createElement('video');
-            video.controls = true;
-            video.autoplay = true;
-            video.playsInline = true;
-
-            const mp4Source = document.createElement('source');
-            mp4Source.src = videoPath;
-            mp4Source.type = 'video/mp4';
-
-            const movSource = document.createElement('source');
-            movSource.src = videoPath;
-            movSource.type = 'video/quicktime';
-
-            video.appendChild(mp4Source);
-            video.appendChild(movSource);
-
-            videoContainer.appendChild(video);
-            currentVideo = video;
-
-            const handleMetadata = () => {
-                requestAnimationFrame(() => {
-                    if (!currentModalElements) {
-                        return;
-                    }
-
-                    sizeModalToVideo(video, currentModalElements);
-                    if (currentModalResizeHandler) {
-                        window.removeEventListener('resize', currentModalResizeHandler);
-                    }
-                    currentModalResizeHandler = () => sizeModalToVideo(video, currentModalElements);
-                    window.addEventListener('resize', currentModalResizeHandler);
-                });
-            };
-
-            const metadataHandler = () => {
-                handleMetadata();
-                video.removeEventListener('loadedmetadata', metadataHandler);
-            };
-
-            if (video.readyState >= 1) {
-                handleMetadata();
-            } else {
-                video.addEventListener('loadedmetadata', metadataHandler);
-            }
-
-            video.addEventListener('error', () => {
-                if (currentModalResizeHandler) {
-                    window.removeEventListener('resize', currentModalResizeHandler);
-                    currentModalResizeHandler = null;
-                }
-
-                resetModalSizing(currentModalElements);
-                videoContainer.innerHTML = '';
-                const placeholder = document.createElement('div');
-                placeholder.className = 'video-placeholder';
-                placeholder.textContent = 'Unable to play this video.';
-                videoContainer.appendChild(placeholder);
-                currentVideo = null;
-            }, { once: true });
-        }
-
-        modal.classList.add('active');
-        document.body.style.overflow = 'hidden';
-    } catch (error) {
-        console.error('Error opening modal:', error);
-    }
-}
-
-function closeModal() {
-    try {
-        const modal = document.getElementById('modal');
-        const videoContainer = document.getElementById('videoContainer');
-
-        if (currentVideo) {
-            currentVideo.pause();
-            currentVideo = null;
-        }
-
-        if (currentModalResizeHandler) {
-            window.removeEventListener('resize', currentModalResizeHandler);
-            currentModalResizeHandler = null;
-        }
-
-        resetModalSizing(currentModalElements);
-        currentModalElements = null;
-
-        if (modal) {
-            modal.classList.remove('active');
-        }
-
-        document.body.style.overflow = 'auto';
-
-        setTimeout(() => {
-            if (videoContainer) {
-                videoContainer.innerHTML = '';
-                const placeholder = document.createElement('div');
-                placeholder.className = 'video-placeholder';
-                placeholder.textContent = 'Project video will appear here.';
-                videoContainer.appendChild(placeholder);
-            }
-        }, 300);
-    } catch (error) {
-        console.error('Error closing modal:', error);
-    }
-}
-
-function initEventDelegation() {
-    document.addEventListener('click', event => {
-        try {
-            const grateCard = event.target.closest('.grate-card');
-            if (grateCard) {
-                const modalType = grateCard.dataset.modalType;
-                const modalTitle = grateCard.dataset.modalTitle;
-                if (modalType) {
-                    openModal(modalTitle, modalType);
-                }
-                return;
-            }
-
-            const closeBtn = event.target.closest('.close-btn');
-            if (closeBtn) {
-                const pageName = closeBtn.dataset.closePage;
-                if (pageName) {
-                    closePage(pageName);
-                }
-                return;
-            }
-
-            if (event.target.matches('#closeModalBtn') || event.target.closest('.close-modal-btn')) {
-                closeModal();
-                return;
-            }
-
-            if (event.target.matches('#modal')) {
-                closeModal();
-            }
-        } catch (error) {
-            console.error('Error handling click event:', error);
-        }
-    });
-
-    document.addEventListener('keydown', event => {
-        if (event.key === 'Escape') {
-            try {
-                closeModal();
-            } catch (error) {
-                console.error('Error closing modal with escape key:', error);
-            }
-        }
-    });
-}
-
-function initNavigation() {
+function initNavigation(resumeDrawer) {
     try {
         const stickyNav = document.getElementById('stickyNav');
         const heroSection = document.getElementById('hero');
@@ -1555,7 +1089,9 @@ function initNavigation() {
             link.addEventListener('click', event => {
                 if (link.dataset.resumeDrawer === 'true') {
                     event.preventDefault();
-                    openResumeDrawer(link);
+                    if (resumeDrawer && typeof resumeDrawer.open === 'function') {
+                        resumeDrawer.open(link);
+                    }
                     return;
                 }
 
@@ -2012,598 +1548,3 @@ function closeResumeDrawer() {
     }
 }
 
-function handleResumeDrawerKeydown(event) {
-    if (event.key === 'Escape' && resumeDrawerElement && resumeDrawerElement.getAttribute('aria-hidden') === 'false') {
-        closeResumeDrawer();
-        event.preventDefault();
-    }
-}
-
-function initAccordion() {
-    try {
-        const accordionHeaders = document.querySelectorAll('.accordion-header');
-
-        accordionHeaders.forEach(header => {
-            header.addEventListener('click', function onAccordionClick() {
-                const item = this.parentElement;
-                const isActive = item.classList.contains('active');
-
-                document.querySelectorAll('.accordion-item').forEach(accordionItem => {
-                    accordionItem.classList.remove('active');
-                });
-
-                if (!isActive) {
-                    item.classList.add('active');
-                }
-            });
-        });
-    } catch (error) {
-        console.error('Error initializing accordion:', error);
-    }
-}
-
-function initMenu() {
-    try {
-        document.querySelectorAll('.menu-item').forEach(item => {
-            item.addEventListener('click', function onMenuClick() {
-                const pageId = this.getAttribute('data-page');
-                const detailPage = document.getElementById(`page-${pageId}`);
-
-                if (!detailPage) {
-                    console.warn(`Detail page not found: ${pageId}`);
-                    return;
-                }
-
-                document.querySelectorAll('.detail-page').forEach(page => {
-                    page.classList.remove('active');
-                });
-                document.querySelectorAll('.menu-item').forEach(menuItem => {
-                    menuItem.classList.remove('active');
-                });
-
-                this.classList.add('active');
-                detailPage.classList.add('active');
-            });
-        });
-    } catch (error) {
-        console.error('Error initializing menu:', error);
-    }
-}
-
-function closePage(pageId) {
-    try {
-        const detailPage = document.getElementById(`page-${pageId}`);
-        const menuItem = document.querySelector(`[data-page="${pageId}"]`);
-
-        if (detailPage) {
-            detailPage.classList.remove('active');
-        }
-
-        if (menuItem) {
-            menuItem.classList.remove('active');
-        }
-    } catch (error) {
-        console.error('Error closing page:', error);
-    }
-}
-
-const PROJECTS_MARQUEE_STYLE_ID = 'projects-marquee-keyframes';
-const PROJECTS_MARQUEE_ANIMATION_NAME = 'scroll-projects-marquee';
-
-function teardownProjectsMarqueeAnimation(marquee) {
-    if (!marquee) {
-        return;
-    }
-
-    const cleanup = marquee.__projectsMarqueeCleanup;
-    if (typeof cleanup === 'function') {
-        try {
-            cleanup();
-        } catch (error) {
-            console.warn('Projects marquee cleanup encountered an issue:', error);
-        }
-    }
-
-    marquee.__projectsMarqueeCleanup = null;
-    marquee.classList.remove('marquee--animated');
-    marquee.classList.remove('marquee--paused');
-    marquee.style.transform = '';
-}
-
-function initMarqueeAnimations() {
-    const PROJECTS_DURATION = 120000;
-
-    setupSeamlessMarquee(document.getElementById('nameMarquee'));
-    setupSeamlessMarquee(document.getElementById('thankYouMarquee'));
-
-    if (!isProjectsMobileView) {
-        initProjectsMarqueeAnimation({ duration: PROJECTS_DURATION });
-    }
-}
-
-function initProjectsMarqueeAnimation({ duration = 120000 } = {}) {
-    const marquee = document.getElementById('projectsMarquee');
-
-    if (!marquee) {
-        return;
-    }
-
-    if (isProjectsMobileView || marquee.classList.contains('projects-gallery')) {
-        teardownProjectsMarqueeAnimation(marquee);
-        return;
-    }
-
-    if (marquee.children.length < 2) {
-        teardownProjectsMarqueeAnimation(marquee);
-        return;
-    }
-
-    const container = marquee.parentElement;
-    if (!container) {
-        teardownProjectsMarqueeAnimation(marquee);
-        return;
-    }
-
-    teardownProjectsMarqueeAnimation(marquee);
-
-    const cleanupTasks = [];
-    let pendingStart = null;
-    let lastHalfWidth = null;
-    let isAnimationActive = true;
-
-    const reduceMotionQuery = typeof window !== 'undefined' && typeof window.matchMedia === 'function'
-        ? window.matchMedia('(prefers-reduced-motion: reduce)')
-        : null;
-
-    const performCleanup = () => {
-        isAnimationActive = false;
-        pendingStart = null;
-        while (cleanupTasks.length) {
-            const task = cleanupTasks.shift();
-            try {
-                task();
-            } catch (error) {
-                console.warn('Projects marquee cleanup error:', error);
-            }
-        }
-        marquee.__projectsMarqueeCleanup = null;
-    };
-
-    marquee.__projectsMarqueeCleanup = performCleanup;
-
-    try {
-        const scheduleMeasurement = () => new Promise(resolve => {
-            requestAnimationFrame(() => {
-                requestAnimationFrame(resolve);
-            });
-        });
-
-        const runAnimation = () => {
-            if (!isAnimationActive) {
-                return Promise.resolve();
-            }
-
-            if (pendingStart) {
-                return pendingStart;
-            }
-
-            if (reduceMotionQuery && reduceMotionQuery.matches) {
-                marquee.classList.remove('marquee--animated');
-                marquee.classList.remove('marquee--paused');
-                marquee.style.transform = '';
-                lastHalfWidth = null;
-                return Promise.resolve();
-            }
-
-            marquee.classList.remove('marquee--animated');
-            marquee.classList.remove('marquee--paused');
-
-            pendingStart = waitForMediaOrTimeout(marquee)
-                .then(scheduleMeasurement)
-                .then(() => {
-                    if (!isAnimationActive) {
-                        return;
-                    }
-
-                    const halfWidth = Math.round(marquee.scrollWidth / 2);
-
-                    if (!halfWidth) {
-                        return;
-                    }
-
-                    if (halfWidth !== lastHalfWidth) {
-                        applyProjectsMarqueeStyles(halfWidth, duration);
-                        lastHalfWidth = halfWidth;
-                    }
-
-                    marquee.style.transform = `translate3d(-${halfWidth}px, 0, 0)`;
-                    marquee.classList.add('marquee--animated');
-                })
-                .finally(() => {
-                    pendingStart = null;
-                });
-
-            return pendingStart;
-        };
-
-        const handleResize = () => {
-            lastHalfWidth = null;
-            runAnimation();
-        };
-
-        const handleMouseEnter = () => {
-            if (!isAnimationActive) {
-                return;
-            }
-            marquee.classList.add('marquee--paused');
-        };
-
-        const handleMouseLeave = () => {
-            marquee.classList.remove('marquee--paused');
-        };
-
-        runAnimation();
-
-        if (typeof ResizeObserver !== 'undefined') {
-            const resizeObserver = new ResizeObserver(handleResize);
-            resizeObserver.observe(container);
-            cleanupTasks.push(() => resizeObserver.disconnect());
-        } else {
-            window.addEventListener('resize', handleResize);
-            cleanupTasks.push(() => window.removeEventListener('resize', handleResize));
-        }
-
-        container.addEventListener('mouseenter', handleMouseEnter);
-        cleanupTasks.push(() => container.removeEventListener('mouseenter', handleMouseEnter));
-
-        container.addEventListener('mouseleave', handleMouseLeave);
-        cleanupTasks.push(() => container.removeEventListener('mouseleave', handleMouseLeave));
-
-        if (reduceMotionQuery) {
-            const handleMotionChange = () => {
-                if (reduceMotionQuery.matches) {
-                    marquee.classList.remove('marquee--animated');
-                    marquee.classList.remove('marquee--paused');
-                    marquee.style.transform = '';
-                } else {
-                    lastHalfWidth = null;
-                    setupProjectsMarqueeMediaPreloader(marquee);
-                    runAnimation();
-                }
-            };
-
-            if (typeof reduceMotionQuery.addEventListener === 'function') {
-                reduceMotionQuery.addEventListener('change', handleMotionChange);
-                cleanupTasks.push(() => {
-                    if (typeof reduceMotionQuery.removeEventListener === 'function') {
-                        reduceMotionQuery.removeEventListener('change', handleMotionChange);
-                    }
-                });
-            } else if (typeof reduceMotionQuery.addListener === 'function') {
-                reduceMotionQuery.addListener(handleMotionChange);
-                cleanupTasks.push(() => {
-                    if (typeof reduceMotionQuery.removeListener === 'function') {
-                        reduceMotionQuery.removeListener(handleMotionChange);
-                    }
-                });
-            }
-        }
-    } catch (error) {
-        console.error('Projects marquee initialization failed:', error);
-        performCleanup();
-    }
-}
-
-function applyProjectsMarqueeStyles(halfWidth, durationMs) {
-    const head = document.head || document.querySelector('head');
-
-    if (!head) {
-        return;
-    }
-
-    let styleElement = document.getElementById(PROJECTS_MARQUEE_STYLE_ID);
-
-    if (!styleElement) {
-        styleElement = document.createElement('style');
-        styleElement.id = PROJECTS_MARQUEE_STYLE_ID;
-        head.appendChild(styleElement);
-    }
-
-    const durationSeconds = Math.max(durationMs / 1000, 0.001);
-    const formattedDuration = Number.isFinite(durationSeconds)
-        ? durationSeconds.toFixed(3).replace(/\.?0+$/, '')
-        : '120';
-
-    const styleContent = `
-@keyframes ${PROJECTS_MARQUEE_ANIMATION_NAME} {
-    from { transform: translate3d(-${halfWidth}px, 0, 0); }
-    to { transform: translate3d(0, 0, 0); }
-}
-
-#projectsMarquee.marquee--animated {
-    animation: ${PROJECTS_MARQUEE_ANIMATION_NAME} ${formattedDuration}s linear infinite;
-}
-
-#projectsMarquee.marquee--animated.marquee--paused {
-    animation-play-state: paused;
-}
-`.trim();
-
-    if (styleElement.textContent !== styleContent) {
-        styleElement.textContent = styleContent;
-    }
-}
-
-function waitForMediaOrTimeout(root, timeoutMs = 500) {
-    if (!root) {
-        return Promise.resolve();
-    }
-
-    const mediaElements = Array.from(root.querySelectorAll('img, video'));
-
-    if (!mediaElements.length) {
-        return Promise.resolve();
-    }
-
-    const mediaPromises = mediaElements.map(element => {
-        const tagName = typeof element.tagName === 'string'
-            ? element.tagName.toLowerCase()
-            : '';
-
-        if (tagName === 'img') {
-            if (element.loading === 'lazy' && !element.complete) {
-                return Promise.resolve();
-            }
-
-            if (element.complete && element.naturalWidth > 0) {
-                return Promise.resolve();
-            }
-
-            if (typeof element.decode === 'function') {
-                return element.decode().catch(() => {});
-            }
-
-            return new Promise(resolve => {
-                const finalize = () => {
-                    element.removeEventListener('load', finalize);
-                    element.removeEventListener('error', finalize);
-                    resolve();
-                };
-
-                element.addEventListener('load', finalize, { once: true });
-                element.addEventListener('error', finalize, { once: true });
-            });
-        }
-
-        if (tagName === 'video') {
-            if (element.dataset && element.dataset.deferLoad === 'true') {
-                return Promise.resolve();
-            }
-
-            if (element.readyState >= 1) {
-                return Promise.resolve();
-            }
-
-            return new Promise(resolve => {
-                const finalize = () => {
-                    element.removeEventListener('loadedmetadata', finalize);
-                    element.removeEventListener('loadeddata', finalize);
-                    element.removeEventListener('error', finalize);
-                    resolve();
-                };
-
-                element.addEventListener('loadedmetadata', finalize, { once: true });
-                element.addEventListener('loadeddata', finalize, { once: true });
-                element.addEventListener('error', finalize, { once: true });
-            });
-        }
-
-        return Promise.resolve();
-    });
-
-    const timeoutPromise = new Promise(resolve => {
-        setTimeout(resolve, timeoutMs);
-    });
-
-    return Promise.race([
-        Promise.all(mediaPromises).catch(() => {}),
-        timeoutPromise,
-    ]);
-}
-
-function initSeamlessMarquee({
-    marqueeId,
-    duration = 30000,
-    pixelsPerSecond,
-    direction = 'left',
-    pauseOnHover = false,
-    startAt,
-    onReady,
-} = {}) {
-    if (!marqueeId) {
-        return null;
-    }
-
-    const marquee = document.getElementById(marqueeId);
-    if (!marquee || !marquee.children.length) {
-        return null;
-    }
-
-    const container = marquee.parentElement;
-    if (!container) {
-        return null;
-    }
-
-    const directionMultiplier = direction === 'right' ? 1 : -1;
-    const offsetFactor = typeof startAt === 'number' ? startAt : (directionMultiplier === 1 ? -1 : 0);
-
-    if (marquee.children.length < 2) {
-        marquee.innerHTML += marquee.innerHTML;
-    }
-
-    const state = {
-        animationFrameId: null,
-        halfWidth: 0,
-        speed: typeof pixelsPerSecond === 'number' && pixelsPerSecond > 0 ? pixelsPerSecond : null,
-        position: 0,
-        lastTime: null,
-        isPaused: false,
-    };
-
-    const normalizePosition = () => {
-        if (!state.halfWidth) {
-            return;
-        }
-
-        const limit = state.halfWidth;
-
-        if (directionMultiplier === -1) {
-            while (state.position <= -limit) {
-                state.position += limit;
-            }
-            while (state.position > 0) {
-                state.position -= limit;
-            }
-        } else {
-            while (state.position >= 0) {
-                state.position -= limit;
-            }
-            while (state.position < -limit) {
-                state.position += limit;
-            }
-        }
-    };
-
-    const measure = () => {
-        state.halfWidth = marquee.scrollWidth / 2;
-
-        if (!state.halfWidth) {
-            return false;
-        }
-
-        if (!state.speed) {
-            state.speed = state.halfWidth / (duration / 1000);
-        }
-
-        state.position = offsetFactor * state.halfWidth;
-        normalizePosition();
-        marquee.style.transform = `translate3d(${state.position}px, 0, 0)`;
-
-        if (typeof onReady === 'function') {
-            onReady({
-                speed: state.speed,
-                halfWidth: state.halfWidth,
-            });
-        }
-
-        return true;
-    };
-
-    const step = time => {
-        if (state.isPaused) {
-            state.animationFrameId = requestAnimationFrame(step);
-            return;
-        }
-
-        if (state.lastTime === null) {
-            state.lastTime = time;
-            state.animationFrameId = requestAnimationFrame(step);
-            return;
-        }
-
-        if (!state.halfWidth || !state.speed) {
-            state.animationFrameId = requestAnimationFrame(step);
-            return;
-        }
-
-        const delta = (time - state.lastTime) / 1000;
-        state.lastTime = time;
-
-        state.position += directionMultiplier * state.speed * delta;
-        normalizePosition();
-
-        marquee.style.transform = `translate3d(${state.position}px, 0, 0)`;
-        state.animationFrameId = requestAnimationFrame(step);
-    };
-
-    const start = () => {
-        if (!measure()) {
-            requestAnimationFrame(start);
-            return;
-        }
-
-        if (state.animationFrameId !== null) {
-            cancelAnimationFrame(state.animationFrameId);
-        }
-
-        state.lastTime = null;
-        state.animationFrameId = requestAnimationFrame(step);
-    };
-
-    const readyPromise = document.fonts && typeof document.fonts.ready === 'object'
-        ? document.fonts.ready.catch(() => {})
-        : Promise.resolve();
-
-    readyPromise.then(() => {
-        requestAnimationFrame(() => {
-            requestAnimationFrame(start);
-        });
-    });
-
-    let resizeObserver;
-    let resizeHandler;
-
-    if (typeof ResizeObserver !== 'undefined') {
-        resizeObserver = new ResizeObserver(() => {
-            state.halfWidth = 0;
-            start();
-        });
-        resizeObserver.observe(container);
-    } else {
-        resizeHandler = () => {
-            state.halfWidth = 0;
-            start();
-        };
-        window.addEventListener('resize', resizeHandler);
-    }
-
-    let onMouseEnter;
-    let onMouseLeave;
-
-    if (pauseOnHover) {
-        onMouseEnter = () => {
-            state.isPaused = true;
-        };
-
-        onMouseLeave = () => {
-            state.isPaused = false;
-            state.lastTime = null;
-        };
-
-        container.addEventListener('mouseenter', onMouseEnter);
-        container.addEventListener('mouseleave', onMouseLeave);
-    }
-
-    const destroy = () => {
-        if (state.animationFrameId !== null) {
-            cancelAnimationFrame(state.animationFrameId);
-        }
-
-        if (resizeObserver) {
-            resizeObserver.disconnect();
-        } else if (resizeHandler) {
-            window.removeEventListener('resize', resizeHandler);
-        }
-
-        if (pauseOnHover) {
-            container.removeEventListener('mouseenter', onMouseEnter);
-            container.removeEventListener('mouseleave', onMouseLeave);
-        }
-    };
-
-    return {
-        destroy,
-        getPixelsPerSecond: () => state.speed || 0,
-        getHalfWidth: () => state.halfWidth,
-    };
-}

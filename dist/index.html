@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Michael Wiss</title>
+    <link rel="stylesheet" href="assets/css/main.css">
+</head>
+<body>
+    <!-- Sticky Navigation -->
+    <nav class="sticky-nav" id="stickyNav">
+        <div class="nav-logo" id="navLogo"></div>
+        <div class="nav-links" id="navLinks"></div>
+    </nav>
+
+    <div class="hero-text gradient-text" id="hero"></div>
+
+    <div class="blue-marquee-container">
+        <div class="blue-marquee seamless-marquee" id="nameMarquee" aria-hidden="true"></div>
+    </div>
+
+    <div class="marquee-container" id="projects">
+        <div class="marquee" id="projectsMarquee"></div>
+    </div>
+
+    <div class="accordion-section" id="resume">
+        <h2 class="accordion-header-text" id="journeyTitle"></h2>
+        <div class="accordion-container" id="accordionContainer"></div>
+    </div>
+
+    <div class="panels-section" id="panelsSection"></div>
+
+    <!-- Sliding Menu Section -->
+    <div class="menu-container" id="menuContainer"></div>
+
+    <!-- Final Thank You Marquee -->
+    <div class="thank-you-marquee-container">
+        <div class="thank-you-marquee seamless-marquee seamless-marquee--reverse" id="thankYouMarquee" aria-hidden="true">
+            <div class="seamless-marquee__track" data-marquee-track>
+                <div class="seamless-marquee__group" data-marquee-group>
+                    <span class="thank-you-marquee-text seamless-marquee__item">THANK YOU • THANK YOU • THANK YOU • THANK YOU • THANK YOU • THANK YOU • THANK YOU • THANK YOU • </span>
+                </div>
+                <div class="seamless-marquee__group" aria-hidden="true">
+                    <span class="thank-you-marquee-text seamless-marquee__item">THANK YOU • THANK YOU • THANK YOU • THANK YOU • THANK YOU • THANK YOU • THANK YOU • THANK YOU • </span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <section id="contact" class="contact-placeholder" aria-hidden="true"></section>
+
+    <div class="modal" id="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="modalTitle"></h2>
+                <button class="close-modal-btn" id="closeModalBtn">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="modal-video-container" id="videoContainer">
+                    <div class="video-placeholder">
+                        <p>Project video will appear here.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="resume-drawer" id="resumeDrawer" aria-hidden="true" hidden>
+        <div class="resume-drawer__overlay" data-resume-close></div>
+        <div class="resume-drawer__panel" role="dialog" aria-modal="true" aria-label="Michael R. Wiss Resume" tabindex="-1"></div>
+    </div>
+
+    <!-- Infrastructure & Modules -->
+    <script src="assets/js/modules/constants.js" defer></script>
+    <script src="assets/js/modules/state.js" defer></script>
+    <script src="assets/js/modules/domUtils.js" defer></script>
+    <script src="assets/js/modules/ContentLoader.js" defer></script>
+    <script src="assets/js/modules/ContentRenderer.js" defer></script>
+    <script src="assets/js/modules/HeroRenderer.js" defer></script>
+    <script src="assets/js/modules/ProjectsRenderer.js" defer></script>
+    <script src="assets/js/modules/UIRenderer.js" defer></script>
+    <script src="assets/js/modules/VideoPreloader.js" defer></script>
+    <script src="assets/js/modules/ModalManager.js" defer></script>
+    <script src="assets/js/modules/ResumeDrawer.js" defer></script>
+    <script src="assets/js/modules/MarqueeManager.js" defer></script>
+    <script src="assets/js/modules/EventDelegator.js" defer></script>
+
+    <!-- Legacy orchestration (to be refactored incrementally) -->
+    <script src="assets/js/main.js" defer></script>
+</body> 
+</html>

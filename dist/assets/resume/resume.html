@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Michael Wiss - Web Developer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.4;
+            color: #222;
+            background: #f5f5f5;
+        }
+        
+        .page {
+            max-width: 8.5in;
+            min-height: 11in;
+            margin: 0 auto;
+            padding: 0.4in 0.5in;
+            background: white;
+        }
+        
+        @media screen and (max-width: 768px) {
+            body {
+                background: white;
+            }
+            
+            .page {
+                padding: 20px;
+                min-height: auto;
+            }
+            
+            header {
+                text-align: center;
+            }
+            
+            h1 {
+                font-size: 24px;
+            }
+            
+            .contact {
+                flex-direction: column;
+                gap: 6px;
+                align-items: center;
+            }
+            
+            .contact span::after {
+                display: none;
+            }
+            
+            .job-header {
+                flex-direction: column;
+                gap: 4px;
+            }
+            
+            .date {
+                font-size: 10px;
+            }
+            
+            .two-column {
+                grid-template-columns: 1fr;
+                gap: 0.15in;
+            }
+        }
+        
+        @media screen and (max-width: 480px) {
+            .page {
+                padding: 16px;
+            }
+            
+            h1 {
+                font-size: 22px;
+            }
+            
+            h2 {
+                font-size: 14px;
+            }
+            
+            .job-title {
+                font-size: 12px;
+            }
+            
+            .company {
+                font-size: 11px;
+            }
+            
+            .description,
+            .project-desc {
+                font-size: 10px;
+            }
+            
+            .skills {
+                gap: 4px;
+            }
+            
+            .skill-tag {
+                font-size: 8px;
+                padding: 2px 6px;
+            }
+        }
+        
+        header {
+            margin-bottom: 0.15in;
+            padding-bottom: 0.1in;
+            border-bottom: 2px solid #333;
+        }
+        
+        h1 {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 4px;
+            color: #111;
+        }
+        
+        .contact {
+            display: flex;
+            gap: 12px;
+            font-size: 11px;
+            color: #555;
+            flex-wrap: wrap;
+        }
+        
+        .contact span {
+            display: flex;
+            align-items: center;
+        }
+        
+        .contact a {
+            color: #555;
+            text-decoration: none;
+            transition: background-color 0.2s;
+        }
+        
+        .contact a:hover {
+            background-color: #b3e5fc;
+        }
+        
+        .contact span:not(:last-child)::after {
+            content: "•";
+            margin-left: 12px;
+            color: #999;
+        }
+        
+        .download-btn {
+            background: #333;
+            color: white;
+            border: none;
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 11px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: background-color 0.2s;
+        }
+        
+        .download-btn:hover {
+            background-color: #b3e5fc;
+            color: #333;
+        }
+        
+        h2 {
+            font-size: 16px;
+            font-weight: 700;
+            margin: 0.12in 0 0.08in 0;
+            color: #111;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .job {
+            margin-bottom: 0.12in;
+        }
+        
+        .job-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: 3px;
+        }
+        
+        .job-title {
+            font-weight: 600;
+            font-size: 13px;
+        }
+        
+        .company {
+            font-size: 12px;
+            color: #555;
+            font-style: italic;
+        }
+        
+        .date {
+            font-size: 11px;
+            color: #666;
+            white-space: nowrap;
+        }
+        
+        .description {
+            font-size: 11px;
+            line-height: 1.4;
+            margin-bottom: 5px;
+            color: #333;
+        }
+        
+        .project {
+            margin-bottom: 6px;
+        }
+        
+        .project-name {
+            font-weight: 600;
+            font-size: 11.5px;
+            color: #111;
+        }
+        
+        .project-name a {
+            color: #444;
+            text-decoration: none;
+            transition: background-color 0.2s;
+        }
+        
+        .project-name a:hover {
+            background-color: #b3e5fc;
+        }
+        
+        .project-name a.no-hover:hover {
+            background-color: transparent;
+            cursor: default;
+        }
+        
+        .project-desc {
+            font-size: 10.5px;
+            line-height: 1.35;
+            color: #444;
+            margin-top: 1px;
+        }
+        
+        .skills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-top: 5px;
+        }
+        
+        .skill-tag {
+            background: #f0f0f0;
+            padding: 2px 7px;
+            border-radius: 3px;
+            font-size: 9px;
+            color: #444;
+            font-weight: 500;
+        }
+        
+        .two-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.15in;
+        }
+        
+        .section {
+            margin-bottom: 0.12in;
+        }
+        
+        .education {
+            display: flex;
+            justify-content: space-between;
+            font-size: 11px;
+            margin-top: 0.08in;
+        }
+        
+        .degree {
+            font-weight: 600;
+        }
+        
+        @media print {
+            body {
+                background: white;
+            }
+            .page {
+                margin: 0;
+                padding: 0.4in 0.5in;
+            }
+            .download-btn {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="page">
+        <header>
+            <h1>Michael Wiss</h1>
+            <div class="contact">
+                <span>Web Developer</span>
+                <span>Minneapolis, NY, Remote</span>
+                <span><a href="mailto:michael.wiss@gmail.com">michael.wiss@gmail.com</a></span>
+                <span>612-434-7463</span>
+                <span><a href="https://github.com/MichaelWiss" target="_blank">github.com/MichaelWiss</a></span>
+                <span><button onclick="window.print()" class="download-btn">Download PDF</button></span>
+            </div>
+        </header>
+
+        <main>
+            <section class="section">
+                <h2>Experience</h2>
+                
+                <div class="job">
+                    <div class="job-header">
+                        <div>
+                            <span class="job-title">Freelance Web Developer</span>
+                            <span class="company"> — Independent Contractor</span>
+                        </div>
+                        <span class="date">2013 – Present</span>
+                    </div>
+                    <p class="description">Building modern web applications with React, TypeScript, and Next.js. Specializing in PWAs, e-commerce solutions, and headless CMS architectures with focus on performance and accessibility.</p>
+                    
+                    <div class="project">
+                        <div class="project-name"><a href="https://github.com/MichaelWiss/Payload" target="_blank">Payload CMS + Next.js E-Commerce Platform</a></div>
+                        <div class="project-desc">Composable e-commerce platform using Payload CMS v3 (Node.js/TypeScript) as headless backend and Next.js 15 (App Router) storefront, integrated with Stripe for payment flows. Defined core collections (Products, Variants, Categories, Orders) with content-block extensibility. Built category filtering, rich product pages with variants, cart state management, and SEO-friendly metadata. PostgreSQL schema with REST API endpoints, production-ready deployment on Vercel. Delivered unified content-commerce stack enabling rapid product onboarding and streamlined checkout UX with full CMS control.</div>
+                    </div>
+                    
+                    <div class="project">
+                        <div class="project-name"><a href="https://github.com/MichaelWiss/shopify5LiquidJson" target="_blank">Custom Shopify Online Store 2.0 Theme — Commerce Engine</a></div>
+                        <div class="project-desc">Developed a custom Shopify Online Store 2.0 theme using a full design-system approach with SCSS tokens, CSS custom properties, and modular JSON templates. Built a flexible section architecture with reusable Liquid components, an AJAX cart with variant logic, and improved mobile accessibility through WCAG-compliant interactions. The project highlights my ability to architect modern Shopify themes with clean Liquid structure, responsive design, and performant front-end behavior.</div>
+                    </div>
+                    
+                    <div class="project">
+                        <div class="project-name"><a href="https://github.com/MichaelWiss/CraftCMS" target="_blank">CraftCMS — Full-stack E-Commerce Platform</a></div>
+                        <div class="project-desc">Complete e-commerce system combining Craft CMS 4 + Craft Commerce 4 with Next.js 14 React storefront. Exposed products via GraphQL and custom REST API modules. TypeScript + Tailwind frontend using Apollo Client + Zustand for state management. Features full cart and checkout flows, schema-driven content, and modular product components. Delivered performant, CMS-editable commerce experience bridging editorial flexibility with modern front-end architecture.</div>
+                    </div>
+                    
+                    <div class="project">
+                        <div class="project-name"><a href="#" target="_blank">Chef Portfolio CMS — Strapi + Next.js Platform</a></div>
+                        <div class="project-desc">Two-app stack pairing Strapi v5 (SQLite) with Next.js v15 frontend and Tailwind-backed component system for visually rich storytelling.</div>
+                    </div>
+                    
+                    <div class="project">
+                        <div class="project-name"><a href="#" target="_blank">PrintedPoster — Shopify E-Commerce Storefront</a></div>
+                        <div class="project-desc">Production-ready Next.js (App Router) storefront deployed to Vercel with custom product pages, cart flow, and collection filtering.</div>
+                    </div>
+                    
+                    <div class="project">
+                        <div class="project-name"><a href="#" target="_blank">HummingbirdPantry — Smart Pantry PWA</a></div>
+                        <div class="project-desc">Multimodal, offline-first pantry manager with barcode scanning (ZXing), voice/camera hooks, and hardened dev setup (local HTTPS, secrets scanning, Playwright/Vitest). Modular React + TypeScript (Vite) architecture with Zustand and Tailwind + Radix UI for fast, testable feature work. Simplified item intake to "scan-and-stash," laying groundwork for AI-assisted lists and background sync.</div>
+                    </div>
+                    
+                    <div class="project">
+                        <div class="project-name"><a href="#" target="_blank">RunnersRotation — Shopify Hydrogen Storefront</a></div>
+                        <div class="project-desc">Modern Hydrogen storefront on Express + Vite with React Router 7, live Storefront API integration, and metafield-driven homepage hero.</div>
+                    </div>
+                    
+                    <div class="project">
+                        <div class="project-name"><a href="http://dubrovnikcontemporary.com" target="_blank" class="no-hover">Dubrovnikcontemporary.com</a></div>
+                        <div class="project-desc">Gallery website featuring unobtrusive jQuery slideshows and custom Google Maps integration.</div>
+                    </div>
+                    
+                    <div class="project">
+                        <div class="project-name"><a href="http://renovationyc.com" target="_blank" class="no-hover">Renovationyc.com</a></div>
+                        <div class="project-desc">WordPress CMS site with jQuery slideshow, mailing list sign-up, and contact form for rapid client updates.</div>
+                    </div>
+                    
+                    <div class="project">
+                        <div class="project-name"><a href="http://linzinc.com" target="_blank" class="no-hover">Linzinc.com</a></div>
+                        <div class="project-desc">Rebuilt Flash experience with jQuery technologies, full e-commerce catalogue, and integrated blog + social APIs.</div>
+                    </div>
+                    
+                    <div class="skills">
+                        <span class="skill-tag">React</span>
+                        <span class="skill-tag">TypeScript</span>
+                        <span class="skill-tag">Next.js</span>
+                        <span class="skill-tag">Shopify</span>
+                        <span class="skill-tag">Gatsby</span>
+                        <span class="skill-tag">JavaScript</span>
+                        <span class="skill-tag">Node.js</span>
+                        <span class="skill-tag">GraphQL</span>
+                        <span class="skill-tag">Vite</span>
+                        <span class="skill-tag">React Router</span>
+                        <span class="skill-tag">PWA</span>
+                        <span class="skill-tag">Strapi</span>
+                        <span class="skill-tag">Craft CMS</span>
+                        <span class="skill-tag">Payload CMS</span>
+                        <span class="skill-tag">HTML5</span>
+                        <span class="skill-tag">CSS3</span>
+                        <span class="skill-tag">Tailwind</span>
+                        <span class="skill-tag">WordPress</span>
+                    </div>
+                </div>
+
+                <div class="job">
+                    <div class="job-header">
+                        <div>
+                            <span class="job-title">Web Manager</span>
+                            <span class="company"> — WhyHunger</span>
+                        </div>
+                        <span class="date">Aug 2012 – Mar 2013</span>
+                    </div>
+                    <p class="description">Maintained large Symphony and WordPress sites including blog.whyhunger and usfoodsovereigntyalliance. Delivered organization's first responsive fundraising experience.</p>
+                </div>
+
+                <div class="job">
+                    <div class="job-header">
+                        <div>
+                            <span class="job-title">Assistant Manager</span>
+                            <span class="company"> — Phaidon Bookstore</span>
+                        </div>
+                        <span class="date">2010 – 2011</span>
+                    </div>
+                    <p class="description">Led fine-art sales team generating $7k weekly revenue. Managed store operations and designed merchandising displays for discerning clientele.</p>
+                </div>
+
+                <div class="job">
+                    <div class="job-header">
+                        <div>
+                            <span class="job-title">Sales Coordinator</span>
+                            <span class="company"> — Miss K Greenhouses Inc.</span>
+                        </div>
+                        <span class="date">2006 – 2009</span>
+                    </div>
+                    <p class="description">Sold perennials, annuals, and tropicals at Union Square Greenmarket in NYC. Designed seasonal floor layouts and supervised customer service.</p>
+                </div>
+            </section>
+
+            <div class="two-column">
+                <section>
+                    <h2>Technical Skills</h2>
+                    <div style="font-size: 10.5px; line-height: 1.5;">
+                        <strong>Frontend:</strong> HTML5, CSS3, JavaScript, TypeScript, React, Vue, Responsive Design<br>
+                        <strong>Backend & Tools:</strong> Node.js, GraphQL, Gatsby, Shopify Hydrogen, Git, Strapi CMS<br>
+                        <strong>Specializations:</strong> E-Commerce, PWAs, API Integration, Performance Optimization
+                    </div>
+                </section>
+                
+                <section>
+                    <h2>Education</h2>
+                    <div class="education">
+                        <div>
+                            <div class="degree">Bachelor of Fine Arts</div>
+                            <div style="font-size: 10.5px; color: #666;">School of Visual Arts</div>
+                        </div>
+                        <div class="date">2004</div>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

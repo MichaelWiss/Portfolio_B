@@ -99,6 +99,15 @@ class EventDelegator {
             return;
         }
 
+        // On mobile, keep the gallery experience without opening the video modal.
+        const isMobileView = typeof State !== 'undefined'
+            && State.projects
+            && State.projects.isMobileView;
+
+        if (isMobileView) {
+            return;
+        }
+
         const modalTitle = DOMUtils.getData(projectCard, Constants.DATA_ATTRIBUTES.modalTitle);
         this.modalManager.open(modalTitle, modalType);
     }

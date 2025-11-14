@@ -10,6 +10,29 @@ class MarqueeManager {
         this.projectsCleanup = null;
     }
 
+    /**
+     * Refresh static marquees (name and thank-you).
+     *
+     * Uses the existing seamless marquee helper (setupSeamlessMarquee)
+     * from the legacy implementation to keep animations identical
+     * while the rendering is driven by HeroRenderer and HTML.
+     */
+    refreshStaticMarquees() {
+        if (typeof setupSeamlessMarquee !== 'function') {
+            return;
+        }
+
+        const nameMarquee = DOMUtils.byId(Constants.ELEMENTS.nameMarquee);
+        const thankYouMarquee = DOMUtils.byId(Constants.ELEMENTS.thankYouMarquee);
+
+        if (nameMarquee) {
+            setupSeamlessMarquee(nameMarquee);
+        }
+        if (thankYouMarquee) {
+            setupSeamlessMarquee(thankYouMarquee);
+        }
+    }
+
     refreshProjectsMarquee({ duration } = {}) {
         const marquee = DOMUtils.byId(Constants.ELEMENTS.projectsMarquee);
         if (!marquee) {
